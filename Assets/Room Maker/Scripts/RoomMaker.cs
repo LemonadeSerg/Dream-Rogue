@@ -1,0 +1,170 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.Tilemaps;
+using UnityEngine.UI;
+
+public class RoomMaker : MonoBehaviour
+{
+    public Tilemap tilemapBack;
+    public Grid gridBack;
+    public Tilemap tilemapCol;
+    public Grid gridBackCol;
+    public TileBase[] tileBases;
+    public int currentTile = 1;
+    public int selectedGrid = 1;
+
+    public int roomSize = 20;
+    public Sprite[] tileTexture;
+
+    public SpriteRenderer selector;
+
+    public Dropdown OrientationDropDown;
+    public Dropdown RoomTypeDropDown;
+    public InputField BiomeIDField;
+    public InputField RoomNameField;
+
+    public string roomsPath;
+    // Start is called before the first frame update
+
+    private void Start()
+    {
+        roomsPath = Application.dataPath + "/Rooms/";
+        List<BoardData.OrientationType> orTypes = new List<BoardData.OrientationType>();
+        List<string> orTypeName = new List<string>();
+        for (int i = 0; i <= 14; i++)
+        {
+            orTypes.Add((BoardData.OrientationType)i);
+            orTypeName.Add(orTypes[i].ToString());
+        }
+
+        OrientationDropDown.AddOptions(orTypeName);
+
+        List<BoardData.RoomType> rmTypes = new List<BoardData.RoomType>();
+        List<string> rmTypeName = new List<string>();
+        for (int i = 0; i <= 5; i++)
+        {
+            rmTypes.Add((BoardData.RoomType)i);
+            rmTypeName.Add(rmTypes[i].ToString());
+        }
+
+        RoomTypeDropDown.AddOptions(rmTypeName);
+    }
+
+    // Update is called once per frame
+    private void Update()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            LeftClick();
+        }
+        if (Input.GetMouseButtonDown(1))
+        {
+            RightClick();
+        }
+        selector.sprite = tileTexture[currentTile];
+        selector.transform.position = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10));
+    }
+
+    private void OnGUI()
+    {
+    }
+
+    private void changeTile()
+    {
+        if (currentTile < tileBases.Length - 1)
+        {
+            currentTile++;
+        }
+        else
+        {
+            currentTile = 0;
+        }
+    }
+
+    private void LeftClick()
+    {
+        if (selectedGrid == 1)
+        {
+            Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Vector3Int coordinate = gridBack.WorldToCell(mouseWorldPos);
+            if (coordinate.x >= 0 && coordinate.x < roomSize && coordinate.y >= 0 && coordinate.y < roomSize)
+                tilemapBack.SetTile(coordinate, tileBases[currentTile]);
+        }
+        if (selectedGrid == 0)
+        {
+            Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Vector3Int coordinate = gridBackCol.WorldToCell(mouseWorldPos);
+            if (coordinate.x >= 0 && coordinate.x < roomSize && coordinate.y >= 0 && coordinate.y < roomSize)
+                tilemapCol.SetTile(coordinate, tileBases[currentTile]);
+        }
+    }
+
+    private void RightClick()
+    {
+        if (selectedGrid == 1)
+        {
+            Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Vector3Int coordinate = gridBack.WorldToCell(mouseWorldPos);
+            if (coordinate.x >= 0 && coordinate.x < roomSize && coordinate.y >= 0 && coordinate.y < roomSize)
+                tilemapBack.SetTile(coordinate, null);
+        }
+        if (selectedGrid == 0)
+        {
+            Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Vector3Int coordinate = gridBackCol.WorldToCell(mouseWorldPos);
+            if (coordinate.x >= 0 && coordinate.x < roomSize && coordinate.y >= 0 && coordinate.y < roomSize)
+                tilemapCol.SetTile(coordinate, null);
+        }
+    }
+
+    public void saveRoom()
+    {
+        List<string> BackTiles = new List<string>();
+        List<string> ColTiles = new List<string>();
+        RoomData roomData = new RoomData();
+        roomData.roomSize = roomSize;
+        for (int x = 0; x < roomSize; x++)
+        {
+            for (int y = 0; y < roomSize; y++)
+            {
+                if (tilemapBack.GetTile(new Vector3Int(x, y, 0)) != null)
+                    BackTiles.Add(tilemapBack.GetTile(new Vector3Int(x, y, 0)).name);
+                else
+                    BackTiles.Add("Unknown");
+
+                if (tilemapCol.GetTile(new Vector3Int(x, y, 0)) != null)
+                    ColTiles.Add(tilemapCol.GetTile(new Vector3Int(x, y, 0)).name);
+                else
+                    ColTiles.Add("Unknown");
+            }
+        }
+        roomData.collisionTiles = ColTiles.ToArray();
+        roomData.backgroundTiles = BackTiles.ToArray();
+        roomData.roomName = RoomNameField.text;
+        roomData.biomeID = int.Parse(BiomeIDField.text);
+
+        roomData.orientationType = (BoardData.OrientationType)OrientationDropDown.value;
+        roomData.roomType = (BoardData.RoomType)RoomTypeDropDown.value;
+        saveRoom(roomData);
+    }
+
+    public void saveRoom(RoomData roomData)
+    {
+        if (!Directory.Exists(roomsPath))
+            Directory.CreateDirectory(roomsPath);
+
+        using (StreamWriter stream = new StreamWriter(roomsPath + roomData.roomName + ".json"))
+        {
+            string json = JsonUtility.ToJson(roomData);
+            stream.Write(json);
+        }
+    }
+
+    public void exitRoomMaker()
+    {
+        SceneManager.LoadScene(0);
+    }
+}
