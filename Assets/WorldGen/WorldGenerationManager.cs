@@ -60,7 +60,8 @@ public class WorldGenerationManager : MonoBehaviour
             newWallGen.wallOffBiomes(map);
             ouWallsGenerated = true;
         }
-        while (!inWallsGenerated)
+
+        /*while (!inWallsGenerated)
         {
             newWallGen.addFloatingWall(map, 10);
             if (newWallGen.noMore)
@@ -68,7 +69,7 @@ public class WorldGenerationManager : MonoBehaviour
                 newWallGen.addPerimeterBreakoffs(map);
                 inWallsGenerated = true;
             }
-        }
+        }*/
         while (!newWallGen.wallGened)
         {
             newWallGen.buildWall(map, 60);

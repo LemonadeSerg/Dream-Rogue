@@ -23,12 +23,12 @@ public class WorldLoaderManager : MonoBehaviour
     private System.DateTime beginRoomLoad;
 
     private Vector2Int lastRoom;
+
     // Start is called before the first frame update
     private void Start()
     {
         loadWorld = new LoadWorldFiles(ScenePersistantData.worldName);
         loadRooms = new LoadRoomFiles();
-
         worldinfo = loadWorld.worldinfo;
         map = new BoardData[worldinfo.width, worldinfo.height];
         gMap = new GameObject[worldinfo.width, worldinfo.height];
@@ -37,26 +37,33 @@ public class WorldLoaderManager : MonoBehaviour
         loadRooms.loadRooms();
         rooms = loadRooms.rooms.ToArray();
         loaded = new bool[100, 100];
-        player.transform.position = new Vector3Int((int)worldinfo.playerPos.x, (int)worldinfo.playerPos.y,0);
+        player.transform.position = new Vector3Int((int)worldinfo.playerPos.x, (int)worldinfo.playerPos.y, 0);
         loadConnectingCells(getBoardAtVector(worldinfo.playerPos.x, worldinfo.playerPos.y));
-        loadRoom(getBoardAtVector(worldinfo.playerPos.x,worldinfo.playerPos.y));
+        loadRoom(getBoardAtVector(worldinfo.playerPos.x, worldinfo.playerPos.y));
+        for (int x = 0; x < map.GetLength(0); x++)
+        {
+            for (int y = 0; y < map.GetLength(1); y++)
+            {
+                loadRoom(new Vector2Int(x, y));
+            }
+        }
     }
 
     // Update is called once per frame
     private void Update()
     {
-        if(getBoardAtVector(player.transform.position.x, player.transform.position.y) != lastRoom)
+        if (getBoardAtVector(player.transform.position.x, player.transform.position.y) != lastRoom)
         {
             roomChange(getBoardAtVector(player.transform.position.x, player.transform.position.y), lastRoom);
         }
         lastRoom = getBoardAtVector(player.transform.position.x, player.transform.position.y);
     }
 
-    public void roomChange(Vector2Int curentRoom,Vector2Int lastRoom)
+    public void roomChange(Vector2Int curentRoom, Vector2Int lastRoom)
     {
-        print("Changing from room : " + curentRoom.ToString() + " to room : " + lastRoom.ToString());
+        print("Changing from room : " + lastRoom.ToString() + " to room : " + curentRoom.ToString());
         loadConnectingCells(curentRoom);
-        unLoadConnectingCells(lastRoom , curentRoom- lastRoom);
+        unLoadConnectingCells(lastRoom, curentRoom - lastRoom);
     }
 
     public Vector2Int getBoardAtVector(float x, float y)
@@ -66,7 +73,7 @@ public class WorldLoaderManager : MonoBehaviour
 
     public void loadConnectingCells(Vector2Int pos)
     {
-        if(pos.x > 0 && !map[pos.x, pos.y].LeftWall)
+        if (pos.x > 0 && !map[pos.x, pos.y].LeftWall)
         {
             loadRoom(new Vector2Int(pos.x - 1, pos.y));
         }
@@ -78,15 +85,15 @@ public class WorldLoaderManager : MonoBehaviour
         {
             loadRoom(new Vector2Int(pos.x + 1, pos.y));
         }
-        if (pos.y < worldinfo.height - 1&& !map[pos.x, pos.y].TopWall)
+        if (pos.y < worldinfo.height - 1 && !map[pos.x, pos.y].TopWall)
         {
             loadRoom(new Vector2Int(pos.x, pos.y + 1));
         }
     }
 
-    public void unLoadConnectingCells(Vector2Int pos , Vector2Int dir)
+    public void unLoadConnectingCells(Vector2Int pos, Vector2Int dir)
     {
-        if(dir != Vector2.right)
+        if (dir != Vector2.right)
         {
             if (!map[pos.x, pos.y].RightWall)
             {
@@ -115,10 +122,11 @@ public class WorldLoaderManager : MonoBehaviour
             }
         }
     }
+
     public void loadRoom(Vector2Int pos)
     {
-        beginRoomLoad = System.DateTime.Now;
-        if (!loaded[pos.x, pos.y]) {
+        if (!loaded[pos.x, pos.y])
+        {
             RoomData loadingRoomData;
             if (map[pos.x, pos.y].roomName == "")
             {
@@ -129,7 +137,7 @@ public class WorldLoaderManager : MonoBehaviour
                 loadingRoomData = findRoomFromName(map[pos.x, pos.y].roomName);
             }
             loaded[pos.x, pos.y] = true;
-            for(int x = 0; x < roomSize; x++)
+            for (int x = 0; x < roomSize; x++)
             {
                 for (int y = 0; y < roomSize; y++)
                 {
@@ -138,18 +146,19 @@ public class WorldLoaderManager : MonoBehaviour
             }
         }
     }
+
     public UnityEngine.Tilemaps.TileBase getTileBasefromName(string name)
     {
-        foreach(UnityEngine.Tilemaps.TileBase tb in tilebases)
+        foreach (UnityEngine.Tilemaps.TileBase tb in tilebases)
         {
             if (tb.name == name)
                 return tb;
         }
-        
-            return null;
+
+        return null;
     }
 
-    public void unloadRoom(int px,int py)
+    public void unloadRoom(int px, int py)
     {
         beginRoomLoad = System.DateTime.Now;
         if (loaded[px, py])
@@ -168,14 +177,14 @@ public class WorldLoaderManager : MonoBehaviour
     public RoomData findValidRoom(int biomeID, BoardData.RoomType roomType, BoardData.OrientationType orientationType)
     {
         List<RoomData> validRoom = new List<RoomData>();
-        for(int i = 0; i < rooms.Length; i++)
+        for (int i = 0; i < rooms.Length; i++)
         {
-            if (rooms[i].biomeID == biomeID && rooms[i].roomType == roomType && rooms[i].orientationType == orientationType)
+            if (rooms[i].orientationType == orientationType)
             {
                 validRoom.Add(rooms[i]);
             }
         }
-        if(validRoom.Count > 0)
+        if (validRoom.Count > 0)
         {
             int Rand = Random.Range(0, validRoom.Count);
             return validRoom[Rand];

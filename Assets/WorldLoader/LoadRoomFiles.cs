@@ -9,7 +9,6 @@ public class LoadRoomFiles
 
     public List<RoomData> rooms;
 
-
     public void loadRooms()
     {
         if (!Directory.Exists(WorldPath))
@@ -23,9 +22,9 @@ public class LoadRoomFiles
             }
         }
     }
+
     private void LoadJson(string fileName)
     {
-
         using (System.IO.StreamReader stream = new System.IO.StreamReader(fileName))
         {
             string json = stream.ReadToEnd();

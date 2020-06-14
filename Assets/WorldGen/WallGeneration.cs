@@ -222,22 +222,23 @@ public class WallGeneration
                         }
                     }
                 }
-                if (!map[x, y].TopWall)
+                if (y < map.GetLength(1) - 1)
                 {
-                    if (!map[x, y + 1].RightWall)
+                    if (!map[x, y + 1].RightWall && !map[x, y + 1].TopWall)
                     {
-                        if (!map[x + 1, y + 1].BottomWall)
+                        if (!map[x + 1, y + 2].BottomWall && !map[x + 1, y + 2].LeftWall)
                         {
                             boardPos.Add(new Vector2(x, y + 1));
                             wallDir.Add("R");
                         }
                     }
                 }
-                if (!map[x, y].BottomWall)
+
+                if (y > 0)
                 {
-                    if (!map[x, y - 1].RightWall)
+                    if (!map[x, y - 1].RightWall && !map[x, y - 1].BottomWall)
                     {
-                        if (!map[x + 1, y - 1].TopWall)
+                        if (!map[x + 1, y - 2].TopWall && !map[x + 1, y - 2].LeftWall)
                         {
                             boardPos.Add(new Vector2(x, y - 1));
                             wallDir.Add("R");
@@ -273,22 +274,23 @@ public class WallGeneration
                         }
                     }
                 }
-                if (!map[x, y].TopWall)
+                if (y < map.GetLength(1) - 1)
                 {
-                    if (!map[x, y + 1].LeftWall)
+                    if (!map[x, y + 1].LeftWall && !map[x, y + 1].TopWall)
                     {
-                        if (!map[x - 1, y + 1].BottomWall)
+                        if (!map[x - 1, y + 2].RightWall && !map[x - 1, y + 2].BottomWall)
                         {
                             boardPos.Add(new Vector2(x, y + 1));
                             wallDir.Add("L");
                         }
                     }
                 }
-                if (!map[x, y].BottomWall)
+
+                if (y > 0)
                 {
-                    if (!map[x, y - 1].LeftWall)
+                    if (!map[x, y - 1].LeftWall && !map[x, y - 1].BottomWall)
                     {
-                        if (!map[x - 1, y - 1].TopWall)
+                        if (!map[x - 1, y - 2].TopWall && !map[x - 1, y - 2].RightWall)
                         {
                             boardPos.Add(new Vector2(x, y - 1));
                             wallDir.Add("L");

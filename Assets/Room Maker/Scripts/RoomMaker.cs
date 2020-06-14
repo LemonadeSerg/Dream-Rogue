@@ -19,18 +19,24 @@ public class RoomMaker : MonoBehaviour
     public int roomSize = 20;
     public Sprite[] tileTexture;
 
-    public SpriteRenderer selector;
+    public SpriteRenderer selectorTop, selectorMid, selectorBot;
+    public LoadRoomFiles loadRoom;
 
     public Dropdown OrientationDropDown;
     public Dropdown RoomTypeDropDown;
     public InputField BiomeIDField;
     public InputField RoomNameField;
+    public Dropdown loadRoomName;
 
     public string roomsPath;
+
+    public RoomData roomDataLoading;
     // Start is called before the first frame update
 
     private void Start()
     {
+        loadRoom = new LoadRoomFiles();
+        loadRoom.loadRooms();
         roomsPath = Application.dataPath + "/Rooms/";
         List<BoardData.OrientationType> orTypes = new List<BoardData.OrientationType>();
         List<string> orTypeName = new List<string>();
@@ -51,21 +57,54 @@ public class RoomMaker : MonoBehaviour
         }
 
         RoomTypeDropDown.AddOptions(rmTypeName);
+
+        List<string> roomNames = new List<string>();
+        for (int i = 0; i < loadRoom.rooms.Count; i++)
+        {
+            roomNames.Add(loadRoom.rooms[i].roomName);
+        }
+        loadRoomName.AddOptions(roomNames);
     }
 
     // Update is called once per frame
     private void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButton(0))
         {
             LeftClick();
         }
-        if (Input.GetMouseButtonDown(1))
+        if (Input.GetMouseButton(1))
         {
             RightClick();
         }
-        selector.sprite = tileTexture[currentTile];
-        selector.transform.position = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10));
+        if (Input.mouseScrollDelta.y > 0.1f)
+        {
+            currentTile++;
+            if (currentTile >= tileBases.Length)
+            {
+                currentTile = 0;
+            }
+        }
+        if (Input.mouseScrollDelta.y < -0.1f)
+        {
+            currentTile--;
+            if (currentTile <= 0)
+            {
+                currentTile = tileBases.Length - 1;
+            }
+        }
+        if (currentTile > 0)
+        {
+            selectorTop.sprite = tileTexture[currentTile - 1];
+            selectorTop.transform.position = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10)) + Vector3.up;
+        }
+        selectorMid.sprite = tileTexture[currentTile];
+        selectorMid.transform.position = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10));
+        if (currentTile < tileTexture.Length - 1)
+        {
+            selectorBot.sprite = tileTexture[currentTile + 1];
+            selectorBot.transform.position = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10)) + Vector3.down;
+        }
     }
 
     private void OnGUI()
@@ -163,8 +202,35 @@ public class RoomMaker : MonoBehaviour
         }
     }
 
+    public UnityEngine.Tilemaps.TileBase getTileBasefromName(string name)
+    {
+        foreach (UnityEngine.Tilemaps.TileBase tb in tileBases)
+        {
+            if (tb.name == name)
+                return tb;
+        }
+
+        return null;
+    }
+
     public void exitRoomMaker()
     {
         SceneManager.LoadScene(0);
+    }
+
+    public void loadRoomFromFile()
+    {
+        for (int x = 0; x < roomSize; x++)
+        {
+            for (int y = 0; y < roomSize; y++)
+            {
+                tilemapBack.SetTile(new Vector3Int(x, y, 0), getTileBasefromName(loadRoom.rooms[loadRoomName.value].backgroundTiles[x * roomSize + y]));
+            }
+        }
+    }
+
+    public void loadRoomChanged()
+    {
+        loadRoomFromFile();
     }
 }

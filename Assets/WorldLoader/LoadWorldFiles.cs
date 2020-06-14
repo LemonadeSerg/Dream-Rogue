@@ -32,6 +32,8 @@ public class LoadWorldFiles
                 }
                 gMap[x, y] = new GameObject("X:" + x.ToString() + " Y:" + y.ToString());
                 gMap[x, y].transform.position = new Vector2(x * roomSize, y * roomSize);
+                gMap[x, y].AddComponent<RoomManager>();
+                gMap[x, y].GetComponent<RoomManager>().boardData = map[x, y];
             }
         }
     }

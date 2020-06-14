@@ -13,4 +13,9 @@ public class RoomData
     public int biomeID;
     public BoardData.RoomType roomType;
     public BoardData.OrientationType orientationType;
+
+    public string ToString()
+    {
+        return roomName;
+    }
 }
