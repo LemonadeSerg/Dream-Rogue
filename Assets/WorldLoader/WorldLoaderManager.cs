@@ -15,9 +15,10 @@ public class WorldLoaderManager : MonoBehaviour
 
     public GameObject player;
 
-    public float roomSize = 20;
+    public int roomSize = 20;
 
-    public UnityEngine.Tilemaps.Tilemap tilemap;
+    public UnityEngine.Tilemaps.Tilemap backgroundTiles;
+    public UnityEngine.Tilemaps.Tilemap collisionTiles;
     public UnityEngine.Tilemaps.TileBase[] tilebases;
 
     private System.DateTime beginRoomLoad;
@@ -40,13 +41,6 @@ public class WorldLoaderManager : MonoBehaviour
         player.transform.position = new Vector3Int((int)worldinfo.playerPos.x, (int)worldinfo.playerPos.y, 0);
         loadConnectingCells(getBoardAtVector(worldinfo.playerPos.x, worldinfo.playerPos.y));
         loadRoom(getBoardAtVector(worldinfo.playerPos.x, worldinfo.playerPos.y));
-        for (int x = 0; x < map.GetLength(0); x++)
-        {
-            for (int y = 0; y < map.GetLength(1); y++)
-            {
-                loadRoom(new Vector2Int(x, y));
-            }
-        }
     }
 
     // Update is called once per frame
@@ -141,7 +135,8 @@ public class WorldLoaderManager : MonoBehaviour
             {
                 for (int y = 0; y < roomSize; y++)
                 {
-                    tilemap.SetTile(new Vector3Int((int)((pos.x * roomSize) + x), (int)((pos.y * roomSize) + y), 0), getTileBasefromName(loadingRoomData.backgroundTiles[(int)(x * roomSize + y)]));
+                    backgroundTiles.SetTile(new Vector3Int((int)((pos.x * roomSize) + x), (int)((pos.y * roomSize) + y), 0), getTileBasefromName(loadingRoomData.backgroundTiles[(int)(x * roomSize + y)]));
+                    collisionTiles.SetTile(new Vector3Int((int)((pos.x * roomSize) + x), (int)((pos.y * roomSize) + y), 0), getTileBasefromName(loadingRoomData.collisionTiles[(int)(x * roomSize + y)]));
                 }
             }
         }
@@ -168,7 +163,8 @@ public class WorldLoaderManager : MonoBehaviour
             {
                 for (int y = 0; y < roomSize; y++)
                 {
-                    tilemap.SetTile(new Vector3Int((int)((px * roomSize) + x), (int)((py * roomSize) + y), 0), null); ;
+                    backgroundTiles.SetTile(new Vector3Int((int)((px * roomSize) + x), (int)((py * roomSize) + y), 0), null);
+                    collisionTiles.SetTile(new Vector3Int((int)((px * roomSize) + x), (int)((py * roomSize) + y), 0), null);
                 }
             }
         }

@@ -35,6 +35,39 @@ public class RoomMaker : MonoBehaviour
 
     private void Start()
     {
+        for (int x = 0; x < roomSize; x++)
+        {
+            for (int y = 0; y < roomSize; y++)
+            {
+                tilemapBack.SetTile(new Vector3Int(x, y, 0), null);
+                tilemapCol.SetTile(new Vector3Int(x, y, 0), null);
+            }
+        }
+
+        for (int i = 0; i < tileBases.Length; i++)
+        {
+            if (i < roomSize)
+            {
+                tilemapBack.SetTile(new Vector3Int(i, -2, 0), tileBases[i]);
+            }
+            else if (i < roomSize * 2)
+            {
+                tilemapBack.SetTile(new Vector3Int(i - roomSize, -3, 0), tileBases[i]);
+            }
+            else if (i < roomSize * 3)
+            {
+                tilemapBack.SetTile(new Vector3Int(i - roomSize * 2, -4, 0), tileBases[i]);
+            }
+            else if (i < roomSize * 4)
+            {
+                tilemapBack.SetTile(new Vector3Int(i - roomSize * 3, -5, 0), tileBases[i]);
+            }
+            else if (i < roomSize * 4)
+            {
+                tilemapBack.SetTile(new Vector3Int(i - roomSize * 4, -6, 0), tileBases[i]);
+            }
+        }
+
         loadRoom = new LoadRoomFiles();
         loadRoom.loadRooms();
         roomsPath = Application.dataPath + "/Rooms/";
@@ -125,20 +158,21 @@ public class RoomMaker : MonoBehaviour
 
     private void LeftClick()
     {
+        Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector3Int coordinate = gridBackCol.WorldToCell(mouseWorldPos);
         if (selectedGrid == 1)
         {
-            Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            Vector3Int coordinate = gridBack.WorldToCell(mouseWorldPos);
             if (coordinate.x >= 0 && coordinate.x < roomSize && coordinate.y >= 0 && coordinate.y < roomSize)
                 tilemapBack.SetTile(coordinate, tileBases[currentTile]);
         }
         if (selectedGrid == 0)
         {
-            Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            Vector3Int coordinate = gridBackCol.WorldToCell(mouseWorldPos);
             if (coordinate.x >= 0 && coordinate.x < roomSize && coordinate.y >= 0 && coordinate.y < roomSize)
                 tilemapCol.SetTile(coordinate, tileBases[currentTile]);
         }
+
+        if (coordinate.y < 0)
+            currentTile = tileIndexFromName(tilemapBack.GetTile(coordinate).name);
     }
 
     private void RightClick()
@@ -157,6 +191,16 @@ public class RoomMaker : MonoBehaviour
             if (coordinate.x >= 0 && coordinate.x < roomSize && coordinate.y >= 0 && coordinate.y < roomSize)
                 tilemapCol.SetTile(coordinate, null);
         }
+    }
+
+    private int tileIndexFromName(string name)
+    {
+        for (int i = 0; i < tileBases.Length; i++)
+        {
+            if (name == tileBases[i].name)
+                return i;
+        }
+        return 0;
     }
 
     public void saveRoom()
@@ -188,6 +232,8 @@ public class RoomMaker : MonoBehaviour
         roomData.orientationType = (BoardData.OrientationType)OrientationDropDown.value;
         roomData.roomType = (BoardData.RoomType)RoomTypeDropDown.value;
         saveRoom(roomData);
+
+        loadRoom.loadRooms();
     }
 
     public void saveRoom(RoomData roomData)
@@ -232,5 +278,9 @@ public class RoomMaker : MonoBehaviour
     public void loadRoomChanged()
     {
         loadRoomFromFile();
+        OrientationDropDown.value = (int)loadRoom.rooms[loadRoomName.value].orientationType;
+        RoomTypeDropDown.value = (int)loadRoom.rooms[loadRoomName.value].roomType;
+        BiomeIDField.text = loadRoom.rooms[loadRoomName.value].biomeID.ToString();
+        RoomNameField.text = loadRoom.rooms[loadRoomName.value].roomName;
     }
 }
