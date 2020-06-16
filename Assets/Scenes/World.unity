@@ -205,6 +205,7 @@ MonoBehaviour:
   decorationBTiles: {fileID: 380328951}
   collisionTiles: {fileID: 2003323076}
   decorationfTiles: {fileID: 660517099}
+  lastRoom: {x: 0, y: 0}
 --- !u!4 &368270667
 Transform:
   m_ObjectHideFlags: 0
@@ -541,12 +542,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!4 &858493563 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 958031488158201188, guid: 08c2df1c9612aee4780bf5706be6d80e,
-    type: 3}
-  m_PrefabInstance: {fileID: 1408271649}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1268001100
 GameObject:
   m_ObjectHideFlags: 0
@@ -943,6 +938,7 @@ GameObject:
   - component: {fileID: 2102914427}
   - component: {fileID: 2102914426}
   - component: {fileID: 2102914425}
+  - component: {fileID: 2102914428}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -985,7 +981,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 14
+  orthographic size: 8
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -1012,6 +1008,19 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 858493563}
-  m_RootOrder: 1
+  m_Father: {fileID: 0}
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2102914428
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2102914424}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 459dfc7d0067cec44a3e55ae13bf1ede, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  wlManger: {fileID: 368270666}

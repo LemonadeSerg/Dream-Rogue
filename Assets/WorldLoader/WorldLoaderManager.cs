@@ -24,7 +24,7 @@ public class WorldLoaderManager : MonoBehaviour
 
     private System.DateTime beginRoomLoad;
 
-    private Vector2Int lastRoom;
+    public Vector2Int lastRoom;
 
     // Start is called before the first frame update
     private void Start()

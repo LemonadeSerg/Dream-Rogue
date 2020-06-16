@@ -161,39 +161,58 @@ public class RoomMaker : MonoBehaviour
                 decFTilemap.SetTile(coordinate, ScenePersistantData.tileBases.ToArray()[currentTile]);
         }
         if (coordinate.y < 0)
-            currentTile = tileIndexFromName(tilemapBack.GetTile(coordinate).name);
+            currentTile = tileIndexFromName(decFTilemap.GetTile(coordinate).name);
     }
 
     private void RightClick()
     {
+        Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector3Int coordinate = gridBack.WorldToCell(mouseWorldPos);
         if (selectedGrid == 0)
         {
-            Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            Vector3Int coordinate = gridBack.WorldToCell(mouseWorldPos);
             if (coordinate.x >= 0 && coordinate.x < roomSize && coordinate.y >= 0 && coordinate.y < roomSize)
                 tilemapBack.SetTile(coordinate, null);
         }
         if (selectedGrid == 1)
         {
-            Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            Vector3Int coordinate = gridBack.WorldToCell(mouseWorldPos);
             if (coordinate.x >= 0 && coordinate.x < roomSize && coordinate.y >= 0 && coordinate.y < roomSize)
                 decBTilemap.SetTile(coordinate, null);
         }
         if (selectedGrid == 2)
         {
-            Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            Vector3Int coordinate = gridBack.WorldToCell(mouseWorldPos);
             if (coordinate.x >= 0 && coordinate.x < roomSize && coordinate.y >= 0 && coordinate.y < roomSize)
                 tilemapCol.SetTile(coordinate, null);
         }
         if (selectedGrid == 3)
         {
-            Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            Vector3Int coordinate = gridBack.WorldToCell(mouseWorldPos);
             if (coordinate.x >= 0 && coordinate.x < roomSize && coordinate.y >= 0 && coordinate.y < roomSize)
                 decFTilemap.SetTile(coordinate, null);
         }
+        if (coordinate.y < 0)
+            for (int x = 0; x < roomSize; x++)
+            {
+                for (int y = 0; y < roomSize; y++)
+                {
+                    currentTile = tileIndexFromName(decFTilemap.GetTile(coordinate).name);
+
+                    if (selectedGrid == 0)
+                    {
+                        tilemapBack.SetTile(new Vector3Int(x, y, 0), ScenePersistantData.tileBases.ToArray()[currentTile]);
+                    }
+                    if (selectedGrid == 1)
+                    {
+                        decBTilemap.SetTile(new Vector3Int(x, y, 0), ScenePersistantData.tileBases.ToArray()[currentTile]);
+                    }
+                    if (selectedGrid == 2)
+                    {
+                        tilemapCol.SetTile(new Vector3Int(x, y, 0), ScenePersistantData.tileBases.ToArray()[currentTile]);
+                    }
+                    if (selectedGrid == 3)
+                    {
+                        decFTilemap.SetTile(new Vector3Int(x, y, 0), ScenePersistantData.tileBases.ToArray()[currentTile]);
+                    }
+                }
+            }
     }
 
     private int tileIndexFromName(string name)
