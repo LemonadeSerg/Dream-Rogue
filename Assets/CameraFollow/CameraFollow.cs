@@ -23,19 +23,19 @@ public class CameraFollow : MonoBehaviour
 
         UnityEngine.Vector3 target1 = new Vector3(wlManger.player.transform.position.x, wlManger.player.transform.position.y, -10);
 
-        if (target1.x > TRLimit.x - (CamTR.x - CamC.x))
+        if (target1.x > TRLimit.x - (CamTR.x - CamC.x) && !wlManger.map[wlManger.lastRoom.x, wlManger.lastRoom.y].connectedRight)
         {
             target1.x = TRLimit.x - (CamTR.x - CamC.x);
         }
-        if (target1.y > TRLimit.y - (CamTR.y - CamC.y))
+        if (target1.y > TRLimit.y - (CamTR.y - CamC.y) && !wlManger.map[wlManger.lastRoom.x, wlManger.lastRoom.y].connectedUp)
         {
             target1.y = TRLimit.y - (CamTR.y - CamC.y);
         }
-        if (target1.x < BLLimit.x + (CamC.x - CamBL.x))
+        if (target1.x < BLLimit.x + (CamC.x - CamBL.x) && !wlManger.map[wlManger.lastRoom.x, wlManger.lastRoom.y].connectedLeft)
         {
             target1.x = BLLimit.x + (CamC.x - CamBL.x);
         }
-        if (target1.y < BLLimit.y + (CamC.y - CamBL.y))
+        if (target1.y < BLLimit.y + (CamC.y - CamBL.y) && !wlManger.map[wlManger.lastRoom.x, wlManger.lastRoom.y].connectedDown)
         {
             target1.y = BLLimit.y + (CamC.y - CamBL.y);
         }

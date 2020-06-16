@@ -91,6 +91,7 @@ public class TitleMenu : MonoBehaviour
 
     public void loadLevel()
     {
+        ScenePersistantData.worldName = seedIn.text;
         SceneManager.LoadScene(2);
     }
 }

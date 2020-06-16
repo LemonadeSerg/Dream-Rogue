@@ -14,7 +14,10 @@ public class BoardData
 
     public bool cleared;
 
-    public bool connectedCell;
+    public bool connectedUp;
+    public bool connectedDown;
+    public bool connectedRight;
+    public bool connectedLeft;
 
     public int BiomeID
     {

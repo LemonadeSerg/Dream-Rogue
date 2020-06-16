@@ -142,6 +142,11 @@ public class WorldLoaderManager : MonoBehaviour
                     decorationfTiles.SetTile(new Vector3Int((int)((pos.x * roomSize) + x), (int)((pos.y * roomSize) + y), 0), getTileBasefromName(loadingRoomData.decorationFTiles[(int)(x * roomSize + y)]));
                 }
             }
+
+            if (map[pos.x, pos.y].connectedUp || map[pos.x, pos.y].connectedRight || map[pos.x, pos.y].connectedLeft || map[pos.x, pos.y].connectedDown)
+            {
+                loadConnectingCells(pos);
+            }
         }
     }
 
