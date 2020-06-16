@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Tilemaps;
 using UnityEngine.UI;
 
 public class TitleMenu : MonoBehaviour
@@ -13,10 +14,22 @@ public class TitleMenu : MonoBehaviour
     public int roomMaker;
     public WorldGenerationManager worldGenManager;
     public DateTime worldGenStartTime;
+    public TileBase[] tileBases;
+
+    public Sprite[] tileSprites;
 
     // Start is called before the first frame update
     private void Start()
     {
+        ScenePersistantData.tileBases = new List<TileBase>();
+        ScenePersistantData.tileSprites = new List<Sprite>();
+
+        for (int i = 0; i < tileBases.Length; i++)
+        {
+            ScenePersistantData.tileBases.Add(tileBases[i]);
+            ScenePersistantData.tileSprites.Add(tileSprites[i]);
+        }
+        new LoadExternalTiles().loadTiles();
     }
 
     // Update is called once per frame

@@ -8,16 +8,16 @@ using UnityEngine.UI;
 
 public class RoomMaker : MonoBehaviour
 {
-    public Tilemap tilemapBack;
     public Grid gridBack;
+    public Tilemap tilemapBack;
+    public Tilemap decBTilemap;
     public Tilemap tilemapCol;
-    public Grid gridBackCol;
-    public TileBase[] tileBases;
+    public Tilemap decFTilemap;
+
     public int currentTile = 1;
     public int selectedGrid = 1;
 
     public int roomSize = 20;
-    public Sprite[] tileTexture;
 
     public SpriteRenderer selectorTop, selectorMid, selectorBot;
     public LoadRoomFiles loadRoom;
@@ -27,6 +27,7 @@ public class RoomMaker : MonoBehaviour
     public InputField BiomeIDField;
     public InputField RoomNameField;
     public Dropdown loadRoomName;
+    public Dropdown layerChangeDd;
 
     public string roomsPath;
 
@@ -40,32 +41,15 @@ public class RoomMaker : MonoBehaviour
             for (int y = 0; y < roomSize; y++)
             {
                 tilemapBack.SetTile(new Vector3Int(x, y, 0), null);
-                tilemapCol.SetTile(new Vector3Int(x, y, 0), null);
+                decBTilemap.SetTile(new Vector3Int(x, y, 0), null);
+                tilemapBack.SetTile(new Vector3Int(x, y, 0), null);
+                decFTilemap.SetTile(new Vector3Int(x, y, 0), null);
             }
         }
 
-        for (int i = 0; i < tileBases.Length; i++)
+        for (int i = 0; i < ScenePersistantData.tileBases.ToArray().Length; i++)
         {
-            if (i < roomSize)
-            {
-                tilemapBack.SetTile(new Vector3Int(i, -2, 0), tileBases[i]);
-            }
-            else if (i < roomSize * 2)
-            {
-                tilemapBack.SetTile(new Vector3Int(i - roomSize, -3, 0), tileBases[i]);
-            }
-            else if (i < roomSize * 3)
-            {
-                tilemapBack.SetTile(new Vector3Int(i - roomSize * 2, -4, 0), tileBases[i]);
-            }
-            else if (i < roomSize * 4)
-            {
-                tilemapBack.SetTile(new Vector3Int(i - roomSize * 3, -5, 0), tileBases[i]);
-            }
-            else if (i < roomSize * 4)
-            {
-                tilemapBack.SetTile(new Vector3Int(i - roomSize * 4, -6, 0), tileBases[i]);
-            }
+            decFTilemap.SetTile(new Vector3Int(i % 10, (-i / 10) - 2, 0), ScenePersistantData.tileBases.ToArray()[i]);
         }
 
         loadRoom = new LoadRoomFiles();
@@ -113,7 +97,7 @@ public class RoomMaker : MonoBehaviour
         if (Input.mouseScrollDelta.y > 0.1f)
         {
             currentTile++;
-            if (currentTile >= tileBases.Length)
+            if (currentTile >= ScenePersistantData.tileBases.ToArray().Length)
             {
                 currentTile = 0;
             }
@@ -123,30 +107,26 @@ public class RoomMaker : MonoBehaviour
             currentTile--;
             if (currentTile <= 0)
             {
-                currentTile = tileBases.Length - 1;
+                currentTile = ScenePersistantData.tileBases.ToArray().Length - 1;
             }
         }
         if (currentTile > 0)
         {
-            selectorTop.sprite = tileTexture[currentTile - 1];
+            selectorTop.sprite = ScenePersistantData.tileSprites.ToArray()[currentTile - 1];
             selectorTop.transform.position = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10)) + Vector3.up;
         }
-        selectorMid.sprite = tileTexture[currentTile];
+        selectorMid.sprite = ScenePersistantData.tileSprites.ToArray()[currentTile];
         selectorMid.transform.position = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10));
-        if (currentTile < tileTexture.Length - 1)
+        if (currentTile < ScenePersistantData.tileSprites.ToArray().Length - 1)
         {
-            selectorBot.sprite = tileTexture[currentTile + 1];
+            selectorBot.sprite = ScenePersistantData.tileSprites.ToArray()[currentTile + 1];
             selectorBot.transform.position = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10)) + Vector3.down;
         }
     }
 
-    private void OnGUI()
-    {
-    }
-
     private void changeTile()
     {
-        if (currentTile < tileBases.Length - 1)
+        if (currentTile < ScenePersistantData.tileBases.ToArray().Length - 1)
         {
             currentTile++;
         }
@@ -159,45 +139,68 @@ public class RoomMaker : MonoBehaviour
     private void LeftClick()
     {
         Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        Vector3Int coordinate = gridBackCol.WorldToCell(mouseWorldPos);
-        if (selectedGrid == 1)
-        {
-            if (coordinate.x >= 0 && coordinate.x < roomSize && coordinate.y >= 0 && coordinate.y < roomSize)
-                tilemapBack.SetTile(coordinate, tileBases[currentTile]);
-        }
+        Vector3Int coordinate = gridBack.WorldToCell(mouseWorldPos);
         if (selectedGrid == 0)
         {
             if (coordinate.x >= 0 && coordinate.x < roomSize && coordinate.y >= 0 && coordinate.y < roomSize)
-                tilemapCol.SetTile(coordinate, tileBases[currentTile]);
+                tilemapBack.SetTile(coordinate, ScenePersistantData.tileBases.ToArray()[currentTile]);
         }
-
+        if (selectedGrid == 1)
+        {
+            if (coordinate.x >= 0 && coordinate.x < roomSize && coordinate.y >= 0 && coordinate.y < roomSize)
+                decBTilemap.SetTile(coordinate, ScenePersistantData.tileBases.ToArray()[currentTile]);
+        }
+        if (selectedGrid == 2)
+        {
+            if (coordinate.x >= 0 && coordinate.x < roomSize && coordinate.y >= 0 && coordinate.y < roomSize)
+                tilemapCol.SetTile(coordinate, ScenePersistantData.tileBases.ToArray()[currentTile]);
+        }
+        if (selectedGrid == 3)
+        {
+            if (coordinate.x >= 0 && coordinate.x < roomSize && coordinate.y >= 0 && coordinate.y < roomSize)
+                decFTilemap.SetTile(coordinate, ScenePersistantData.tileBases.ToArray()[currentTile]);
+        }
         if (coordinate.y < 0)
             currentTile = tileIndexFromName(tilemapBack.GetTile(coordinate).name);
     }
 
     private void RightClick()
     {
-        if (selectedGrid == 1)
+        if (selectedGrid == 0)
         {
             Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             Vector3Int coordinate = gridBack.WorldToCell(mouseWorldPos);
             if (coordinate.x >= 0 && coordinate.x < roomSize && coordinate.y >= 0 && coordinate.y < roomSize)
                 tilemapBack.SetTile(coordinate, null);
         }
-        if (selectedGrid == 0)
+        if (selectedGrid == 1)
         {
             Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            Vector3Int coordinate = gridBackCol.WorldToCell(mouseWorldPos);
+            Vector3Int coordinate = gridBack.WorldToCell(mouseWorldPos);
+            if (coordinate.x >= 0 && coordinate.x < roomSize && coordinate.y >= 0 && coordinate.y < roomSize)
+                decBTilemap.SetTile(coordinate, null);
+        }
+        if (selectedGrid == 2)
+        {
+            Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Vector3Int coordinate = gridBack.WorldToCell(mouseWorldPos);
             if (coordinate.x >= 0 && coordinate.x < roomSize && coordinate.y >= 0 && coordinate.y < roomSize)
                 tilemapCol.SetTile(coordinate, null);
+        }
+        if (selectedGrid == 3)
+        {
+            Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Vector3Int coordinate = gridBack.WorldToCell(mouseWorldPos);
+            if (coordinate.x >= 0 && coordinate.x < roomSize && coordinate.y >= 0 && coordinate.y < roomSize)
+                decFTilemap.SetTile(coordinate, null);
         }
     }
 
     private int tileIndexFromName(string name)
     {
-        for (int i = 0; i < tileBases.Length; i++)
+        for (int i = 0; i < ScenePersistantData.tileBases.ToArray().Length; i++)
         {
-            if (name == tileBases[i].name)
+            if (name == ScenePersistantData.tileBases.ToArray()[i].name)
                 return i;
         }
         return 0;
@@ -206,7 +209,9 @@ public class RoomMaker : MonoBehaviour
     public void saveRoom()
     {
         List<string> BackTiles = new List<string>();
+        List<string> decBTiles = new List<string>();
         List<string> ColTiles = new List<string>();
+        List<string> DecFTiles = new List<string>();
         RoomData roomData = new RoomData();
         roomData.roomSize = roomSize;
         for (int x = 0; x < roomSize; x++)
@@ -222,10 +227,23 @@ public class RoomMaker : MonoBehaviour
                     ColTiles.Add(tilemapCol.GetTile(new Vector3Int(x, y, 0)).name);
                 else
                     ColTiles.Add("Unknown");
+
+                if (decBTilemap.GetTile(new Vector3Int(x, y, 0)) != null)
+                    decBTiles.Add(decBTilemap.GetTile(new Vector3Int(x, y, 0)).name);
+                else
+                    decBTiles.Add("Unknown");
+
+                if (decFTilemap.GetTile(new Vector3Int(x, y, 0)) != null)
+                    DecFTiles.Add(decFTilemap.GetTile(new Vector3Int(x, y, 0)).name);
+                else
+                    DecFTiles.Add("Unknown");
             }
         }
         roomData.collisionTiles = ColTiles.ToArray();
         roomData.backgroundTiles = BackTiles.ToArray();
+        roomData.decorationBTiles = decBTiles.ToArray();
+        roomData.decorationFTiles = DecFTiles.ToArray();
+
         roomData.roomName = RoomNameField.text;
         roomData.biomeID = int.Parse(BiomeIDField.text);
 
@@ -250,7 +268,7 @@ public class RoomMaker : MonoBehaviour
 
     public UnityEngine.Tilemaps.TileBase getTileBasefromName(string name)
     {
-        foreach (UnityEngine.Tilemaps.TileBase tb in tileBases)
+        foreach (UnityEngine.Tilemaps.TileBase tb in ScenePersistantData.tileBases.ToArray())
         {
             if (tb.name == name)
                 return tb;
@@ -271,6 +289,9 @@ public class RoomMaker : MonoBehaviour
             for (int y = 0; y < roomSize; y++)
             {
                 tilemapBack.SetTile(new Vector3Int(x, y, 0), getTileBasefromName(loadRoom.rooms[loadRoomName.value].backgroundTiles[x * roomSize + y]));
+                decBTilemap.SetTile(new Vector3Int(x, y, 0), getTileBasefromName(loadRoom.rooms[loadRoomName.value].decorationBTiles[x * roomSize + y]));
+                tilemapCol.SetTile(new Vector3Int(x, y, 0), getTileBasefromName(loadRoom.rooms[loadRoomName.value].collisionTiles[x * roomSize + y]));
+                decFTilemap.SetTile(new Vector3Int(x, y, 0), getTileBasefromName(loadRoom.rooms[loadRoomName.value].decorationFTiles[x * roomSize + y]));
             }
         }
     }
@@ -282,5 +303,10 @@ public class RoomMaker : MonoBehaviour
         RoomTypeDropDown.value = (int)loadRoom.rooms[loadRoomName.value].roomType;
         BiomeIDField.text = loadRoom.rooms[loadRoomName.value].biomeID.ToString();
         RoomNameField.text = loadRoom.rooms[loadRoomName.value].roomName;
+    }
+
+    public void layerChange()
+    {
+        selectedGrid = layerChangeDd.value;
     }
 }

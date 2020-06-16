@@ -7,6 +7,8 @@ using UnityEngine;
 public class RoomData
 {
     public string roomName;
+    public string[] decorationBTiles;
+    public string[] decorationFTiles;
     public string[] backgroundTiles;
     public string[] collisionTiles;
     public int roomSize;

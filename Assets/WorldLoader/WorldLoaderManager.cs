@@ -18,8 +18,9 @@ public class WorldLoaderManager : MonoBehaviour
     public int roomSize = 20;
 
     public UnityEngine.Tilemaps.Tilemap backgroundTiles;
+    public UnityEngine.Tilemaps.Tilemap decorationBTiles;
     public UnityEngine.Tilemaps.Tilemap collisionTiles;
-    public UnityEngine.Tilemaps.TileBase[] tilebases;
+    public UnityEngine.Tilemaps.Tilemap decorationfTiles;
 
     private System.DateTime beginRoomLoad;
 
@@ -137,6 +138,8 @@ public class WorldLoaderManager : MonoBehaviour
                 {
                     backgroundTiles.SetTile(new Vector3Int((int)((pos.x * roomSize) + x), (int)((pos.y * roomSize) + y), 0), getTileBasefromName(loadingRoomData.backgroundTiles[(int)(x * roomSize + y)]));
                     collisionTiles.SetTile(new Vector3Int((int)((pos.x * roomSize) + x), (int)((pos.y * roomSize) + y), 0), getTileBasefromName(loadingRoomData.collisionTiles[(int)(x * roomSize + y)]));
+                    decorationBTiles.SetTile(new Vector3Int((int)((pos.x * roomSize) + x), (int)((pos.y * roomSize) + y), 0), getTileBasefromName(loadingRoomData.decorationBTiles[(int)(x * roomSize + y)]));
+                    decorationfTiles.SetTile(new Vector3Int((int)((pos.x * roomSize) + x), (int)((pos.y * roomSize) + y), 0), getTileBasefromName(loadingRoomData.decorationFTiles[(int)(x * roomSize + y)]));
                 }
             }
         }
@@ -144,7 +147,7 @@ public class WorldLoaderManager : MonoBehaviour
 
     public UnityEngine.Tilemaps.TileBase getTileBasefromName(string name)
     {
-        foreach (UnityEngine.Tilemaps.TileBase tb in tilebases)
+        foreach (UnityEngine.Tilemaps.TileBase tb in ScenePersistantData.tileBases)
         {
             if (tb.name == name)
                 return tb;
@@ -165,6 +168,8 @@ public class WorldLoaderManager : MonoBehaviour
                 {
                     backgroundTiles.SetTile(new Vector3Int((int)((px * roomSize) + x), (int)((py * roomSize) + y), 0), null);
                     collisionTiles.SetTile(new Vector3Int((int)((px * roomSize) + x), (int)((py * roomSize) + y), 0), null);
+                    decorationBTiles.SetTile(new Vector3Int((int)((px * roomSize) + x), (int)((py * roomSize) + y), 0), null);
+                    decorationfTiles.SetTile(new Vector3Int((int)((px * roomSize) + x), (int)((py * roomSize) + y), 0), null);
                 }
             }
         }
