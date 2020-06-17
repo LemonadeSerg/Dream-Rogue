@@ -15,6 +15,10 @@ public class EntityBase : MonoBehaviour
     // Start is called before the first frame update
     public void init()
     {
+        //Add Behavioural Scripts such as
+        //Movement controllers
+        //Animation controllers
+
         SpriteRenderer sr = this.gameObject.AddComponent<SpriteRenderer>();
         sr.sprite = sprite;
         this.gameObject.AddComponent<PolygonCollider2D>();
@@ -41,7 +45,7 @@ public class EntityBase : MonoBehaviour
 
     public void Interact()
     {
-        print(behaviour);
+        MessageSystem.message("This is " + sprite.name + " with behaviour " + behaviour.ToString());
     }
 
     public void die()

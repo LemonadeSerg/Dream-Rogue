@@ -10,6 +10,7 @@ public static class ScenePersistantData
     public static List<Sprite> tileSprites;
     public static List<EntityBase> entities;
     public static List<RoomData> rooms;
+    public static bool paused;
 
     public static void addTile(Sprite sprite)
     {

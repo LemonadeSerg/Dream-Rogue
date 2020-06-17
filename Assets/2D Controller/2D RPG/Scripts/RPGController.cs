@@ -44,7 +44,13 @@ public class RPGController : MonoBehaviour
     {
         InputHandling();
         playerUpdater();
-        if (!fixedPos) applyMovement();
+        if (!fixedPos && !ScenePersistantData.paused) applyMovement();
+
+        if (ScenePersistantData.paused)
+        {
+            lastDir = rb.velocity.normalized;
+            rb.velocity = Vector2.zero;
+        }
         pushAnimationMotionToAnimtor();
     }
 
@@ -130,8 +136,9 @@ public class RPGController : MonoBehaviour
     private void pushAnimationMotionToAnimtor()
     {
         animator.SetBool("Moving", axis != Vector2.zero);
-        if (fixedPos)
+        if (fixedPos || ScenePersistantData.paused)
         {
+            animator.SetBool("Moving", false);
             if (lastDir.x != 0 || lastDir.y != 0)
             {
                 animator.SetFloat("XAxis", lastDir.x);
