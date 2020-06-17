@@ -14,22 +14,10 @@ public class TitleMenu : MonoBehaviour
     public int roomMaker;
     public WorldGenerationManager worldGenManager;
     public DateTime worldGenStartTime;
-    public TileBase[] tileBases;
-
-    public Sprite[] tileSprites;
 
     // Start is called before the first frame update
     private void Start()
     {
-        ScenePersistantData.tileBases = new List<TileBase>();
-        ScenePersistantData.tileSprites = new List<Sprite>();
-
-        for (int i = 0; i < tileBases.Length; i++)
-        {
-            ScenePersistantData.tileBases.Add(tileBases[i]);
-            ScenePersistantData.tileSprites.Add(tileSprites[i]);
-        }
-        new LoadExternalTiles().loadTiles();
     }
 
     // Update is called once per frame

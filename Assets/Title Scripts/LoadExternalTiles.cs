@@ -6,13 +6,11 @@ using UnityEngine;
 public class LoadExternalTiles
 {
     public string WorldPath = Application.dataPath + "/Tiles/";
-    public List<Sprite> sprites;
 
     public void loadTiles()
     {
         if (!Directory.Exists(WorldPath))
             Directory.CreateDirectory(WorldPath);
-        sprites = new List<Sprite>();
 
         foreach (string file in System.IO.Directory.GetFiles(WorldPath))
         {

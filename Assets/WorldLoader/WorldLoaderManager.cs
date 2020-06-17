@@ -5,14 +5,12 @@ using UnityEngine;
 public class WorldLoaderManager : MonoBehaviour
 {
     private LoadWorldFiles loadWorld;
-    private LoadRoomFiles loadRooms;
 
     public WorldInfo worldinfo;
     public BoardData[,] map;
     public GameObject[,] gMap;
-    public RoomData[] rooms;
     public bool[,] loaded;
-
+    public int[,] killCount;
     public GameObject player;
 
     public int roomSize = 20;
@@ -30,15 +28,13 @@ public class WorldLoaderManager : MonoBehaviour
     private void Start()
     {
         loadWorld = new LoadWorldFiles(ScenePersistantData.worldName);
-        loadRooms = new LoadRoomFiles();
         worldinfo = loadWorld.worldinfo;
         map = new BoardData[worldinfo.width, worldinfo.height];
         gMap = new GameObject[worldinfo.width, worldinfo.height];
         map = loadWorld.map;
         gMap = loadWorld.gMap;
-        loadRooms.loadRooms();
-        rooms = loadRooms.rooms.ToArray();
         loaded = new bool[100, 100];
+        killCount = new int[100, 100];
         player.transform.position = new Vector3Int((int)worldinfo.playerPos.x, (int)worldinfo.playerPos.y, 0);
         loadConnectingCells(getBoardAtVector(worldinfo.playerPos.x, worldinfo.playerPos.y));
         loadRoom(getBoardAtVector(worldinfo.playerPos.x, worldinfo.playerPos.y));
@@ -147,6 +143,21 @@ public class WorldLoaderManager : MonoBehaviour
             {
                 loadConnectingCells(pos);
             }
+            if (loadingRoomData.entityName != null && !map[pos.x, pos.y].cleared)
+            {
+                for (int i = 0; i < loadingRoomData.entityName.Length; i++)
+                {
+                    GameObject go = new GameObject(loadingRoomData.entityName[i]);
+                    EntityBase eb = go.AddComponent<EntityBase>();
+                    eb.sprite = ScenePersistantData.getEntityFromName(loadingRoomData.entityName[i]).sprite;
+                    eb.behaviour = ScenePersistantData.getEntityFromName(loadingRoomData.entityName[i]).behaviour;
+                    eb.wlm = this;
+                    eb.init();
+                    go.transform.position = (pos * roomSize) + loadingRoomData.entityPos[i];
+                    eb.OriginCell = pos;
+                }
+                killCount[pos.x, pos.y] = loadingRoomData.entityName.Length;
+            }
         }
     }
 
@@ -183,11 +194,11 @@ public class WorldLoaderManager : MonoBehaviour
     public RoomData findValidRoom(int biomeID, BoardData.RoomType roomType, BoardData.OrientationType orientationType)
     {
         List<RoomData> validRoom = new List<RoomData>();
-        for (int i = 0; i < rooms.Length; i++)
+        for (int i = 0; i < ScenePersistantData.rooms.Count; i++)
         {
-            if (rooms[i].orientationType == orientationType)
+            if (ScenePersistantData.rooms[i].orientationType == orientationType)
             {
-                validRoom.Add(rooms[i]);
+                validRoom.Add(ScenePersistantData.rooms[i]);
             }
         }
         if (validRoom.Count > 0)
@@ -195,18 +206,18 @@ public class WorldLoaderManager : MonoBehaviour
             int Rand = Random.Range(0, validRoom.Count);
             return validRoom[Rand];
         }
-        return rooms[0];
+        return ScenePersistantData.rooms[0];
     }
 
     public RoomData findRoomFromName(string name)
     {
-        for (int i = 0; i < rooms.Length; i++)
+        for (int i = 0; i < ScenePersistantData.rooms.Count; i++)
         {
-            if (rooms[i].roomName == name)
+            if (ScenePersistantData.rooms[i].roomName == name)
             {
-                return rooms[i];
+                return ScenePersistantData.rooms[i];
             }
         }
-        return rooms[0];
+        return ScenePersistantData.rooms[0];
     }
 }

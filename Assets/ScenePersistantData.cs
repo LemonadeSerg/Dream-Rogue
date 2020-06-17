@@ -8,6 +8,8 @@ public static class ScenePersistantData
     public static string worldName;
     public static List<TileBase> tileBases;
     public static List<Sprite> tileSprites;
+    public static List<EntityBase> entities;
+    public static List<RoomData> rooms;
 
     public static void addTile(Sprite sprite)
     {
@@ -15,6 +17,38 @@ public static class ScenePersistantData
         tile.sprite = sprite;
         tileBases.Add(tile);
         tileSprites.Add(tile.sprite);
+    }
+
+    public static int tileIndexFromName(string name)
+    {
+        for (int i = 0; i < tileBases.ToArray().Length; i++)
+        {
+            if (name == tileBases.ToArray()[i].name)
+                return i;
+        }
+        return 0;
+    }
+
+    public static TileBase getTileBasefromName(string name)
+    {
+        foreach (TileBase tb in tileBases.ToArray())
+        {
+            if (tb.name == name)
+                return tb;
+        }
+
+        return null;
+    }
+
+    public static EntityBase getEntityFromName(string name)
+    {
+        foreach (EntityBase tb in entities.ToArray())
+        {
+            if (tb.name == name)
+                return tb;
+        }
+
+        return entities[0];
     }
 }
 

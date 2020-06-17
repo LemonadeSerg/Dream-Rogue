@@ -26,6 +26,12 @@ public class RPGController : MonoBehaviour
     private bool pickingUp = false;
     private bool holding = false;
 
+    public BoxCollider2D interactionBox;
+
+    public ContactFilter2D interactionContactFilter;
+
+    public int objectsInInteraction;
+
     // Start is called before the first frame update
     private void Start()
     {
@@ -42,7 +48,10 @@ public class RPGController : MonoBehaviour
         pushAnimationMotionToAnimtor();
     }
 
+    private AnimatorStateInfo m_CurrentStateInfo;
+
     private void playerUpdater()
+
     {
         if (dashInitTime + dashTime < Time.time)
             dashing = false;
@@ -53,7 +62,10 @@ public class RPGController : MonoBehaviour
             canDash = false;
 
         if (animator.GetCurrentAnimatorStateInfo(0).IsName("Idle_Pickup") || animator.GetCurrentAnimatorStateInfo(0).IsName("Walking_Pickup"))
+        {
+            pickingUp = false;
             fixedPos = false;
+        }
     }
 
     private void InputHandling()
@@ -70,6 +82,39 @@ public class RPGController : MonoBehaviour
             else if (Input.GetKeyDown(KeyCode.Z) && holding)
                 throwO();
         }
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            Collider2D[] collidersInInteraction = new Collider2D[10];
+            objectsInInteraction = interactionBox.OverlapCollider(interactionContactFilter, collidersInInteraction);
+            for (int i = 0; i < objectsInInteraction; i++)
+            {
+                if (collidersInInteraction[i].GetComponent<EntityBase>() != null)
+                {
+                    collidersInInteraction[i].GetComponent<EntityBase>().Interact();
+                }
+            }
+        }
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            Collider2D[] collidersInInteraction = new Collider2D[10];
+
+            objectsInInteraction = interactionBox.OverlapCollider(interactionContactFilter, collidersInInteraction);
+            for (int i = 0; i < objectsInInteraction; i++)
+            {
+                if (collidersInInteraction[i].GetComponent<EntityBase>() != null)
+                {
+                    collidersInInteraction[i].GetComponent<EntityBase>().Hit(EntityManagmnet.hitType.hand);
+                }
+            }
+        }
+        if (axis.x > 0)
+            interactionBox.offset = new Vector2(0.5f, -0.1f);
+        if (axis.x < 0)
+            interactionBox.offset = new Vector2(-0.5f, -0.1f);
+        if (axis.y < 0)
+            interactionBox.offset = new Vector2(0f, -0.5f);
+        if (axis.y > 0)
+            interactionBox.offset = new Vector2(0f, 0.4f);
     }
 
     private void applyMovement()
@@ -109,7 +154,6 @@ public class RPGController : MonoBehaviour
     {
         pickingUp = true;
         holding = true;
-
         fixPos();
     }
 
