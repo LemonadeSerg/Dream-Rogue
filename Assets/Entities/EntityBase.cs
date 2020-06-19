@@ -9,8 +9,13 @@ public class EntityBase : MonoBehaviour
     public Vector2Int OriginCell;
     public Sprite sprite;
     public WorldLoaderManager wlm;
+    public int health;
+    public string metaText;
+    public bool Solid = true;
 
     public EntityManagmnet.Behaviour behaviour;
+
+    private DreamFragBehaviour dreamFragBehaviour;
 
     // Start is called before the first frame update
     public void init()
@@ -22,7 +27,14 @@ public class EntityBase : MonoBehaviour
         SpriteRenderer sr = this.gameObject.AddComponent<SpriteRenderer>();
         sr.sprite = sprite;
         this.gameObject.AddComponent<PolygonCollider2D>();
-        sr.sortingLayerID = 3;
+        sr.sortingOrder = 3;
+        if (behaviour == EntityManagmnet.Behaviour.DFrag)
+            dreamFragBehaviour = this.gameObject.AddComponent<DreamFragBehaviour>();
+
+        if (Solid)
+            this.gameObject.GetComponent<PolygonCollider2D>().isTrigger = false;
+        else
+            this.gameObject.GetComponent<PolygonCollider2D>().isTrigger = true;
     }
 
     // Update is called once per frame
@@ -40,12 +52,17 @@ public class EntityBase : MonoBehaviour
 
     public void Hit(EntityManagmnet.hitType hitType)
     {
-        die();
+        if (behaviour == EntityManagmnet.Behaviour.Bush && hitType == EntityManagmnet.hitType.sword)
+            die();
     }
 
-    public void Interact()
+    public void Interact(RPGController player)
+
     {
-        MessageSystem.message("This is " + sprite.name + " with behaviour " + behaviour.ToString());
+        if (behaviour == EntityManagmnet.Behaviour.Sign)
+            MessageSystem.message(metaText);
+        if (behaviour == EntityManagmnet.Behaviour.Rock || behaviour == EntityManagmnet.Behaviour.Bush)
+            player.pickup(this);
     }
 
     public void die()
@@ -60,8 +77,31 @@ public class EntityBase : MonoBehaviour
         Destroy(this);
     }
 
-    private string ToString()
+    public void collide(RPGController player)
+    {
+        if (behaviour == EntityManagmnet.Behaviour.DFrag)
+        {
+            ScenePersistantData.DreamFragments += health;
+            MessageSystem.message("Dream Fragments : " + ScenePersistantData.DreamFragments.ToString());
+            Destroy(this.gameObject);
+            Destroy(this);
+        }
+    }
+
+    public override string ToString()
     {
         return sprite.name;
+    }
+
+    private void OnMouseDown()
+    {
+        RoomMaker rm = FindObjectOfType<RoomMaker>();
+        if (rm != null)
+        {
+            if (Input.GetKey(KeyCode.LeftShift))
+                rm.deleteEntity(this);
+            if (Input.GetKey(KeyCode.LeftControl))
+                rm.entityUpdateMeta(this);
+        }
     }
 }

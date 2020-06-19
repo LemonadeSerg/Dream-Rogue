@@ -16,6 +16,7 @@ public class DataPreloader : MonoBehaviour
         ScenePersistantData.tileSprites = new List<Sprite>();
         ScenePersistantData.entities = new List<EntityBase>();
         ScenePersistantData.rooms = new List<RoomData>();
+
         for (int i = 0; i < tileBases.Length; i++)
         {
             ScenePersistantData.tileBases.Add(tileBases[i]);
@@ -26,6 +27,7 @@ public class DataPreloader : MonoBehaviour
         {
             ScenePersistantData.entities.Add(entities[i]);
         }
+
         new LoadExternalTiles().loadTiles();
         new LoadExternalRooms().loadRooms();
     }

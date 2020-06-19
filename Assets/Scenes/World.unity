@@ -163,7 +163,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 10
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &266545796
 GameObject:
@@ -207,7 +207,7 @@ Transform:
   m_Children:
   - {fileID: 2003323073}
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &368270665
 GameObject:
@@ -243,7 +243,7 @@ MonoBehaviour:
     height: 0
     playerPos: {x: 0, y: 0}
   player: {fileID: 1699359970}
-  roomSize: 30
+  roomSize: 32
   backgroundTiles: {fileID: 1268001103}
   decorationBTiles: {fileID: 380328951}
   collisionTiles: {fileID: 2003323076}
@@ -338,7 +338,7 @@ TilemapRenderer:
   m_ChunkCullingBounds: {x: 0, y: 0, z: 0}
   m_MaxChunkCount: 16
   m_MaxFrameAge: 16
-  m_SortOrder: 0
+  m_SortOrder: 3
   m_Mode: 0
   m_DetectChunkCullingBounds: 0
   m_MaskInteraction: 0
@@ -444,7 +444,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 9
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &506950867
 GameObject:
@@ -488,7 +488,7 @@ Transform:
   m_Children:
   - {fileID: 660517097}
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &660517096
 GameObject:
@@ -565,7 +565,7 @@ TilemapRenderer:
   m_ChunkCullingBounds: {x: 0, y: 0, z: 0}
   m_MaxChunkCount: 16
   m_MaxFrameAge: 16
-  m_SortOrder: 0
+  m_SortOrder: 3
   m_Mode: 0
   m_DetectChunkCullingBounds: 0
   m_MaskInteraction: 0
@@ -607,6 +607,36 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
+--- !u!1 &834515218
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 834515219}
+  m_Layer: 0
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &834515219
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 834515218}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.35, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1699359977}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &843288917
 GameObject:
   m_ObjectHideFlags: 0
@@ -649,77 +679,8 @@ Transform:
   m_Children:
   - {fileID: 1268001101}
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &986578905
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 1747810019642450596, guid: 7c71e739061db294697bb62fa8cb1db2,
-        type: 3}
-      propertyPath: m_Name
-      value: Bush Entity
-      objectReference: {fileID: 0}
-    - target: {fileID: 1747810019642450598, guid: 7c71e739061db294697bb62fa8cb1db2,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -2.9895375
-      objectReference: {fileID: 0}
-    - target: {fileID: 1747810019642450598, guid: 7c71e739061db294697bb62fa8cb1db2,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -2.2298088
-      objectReference: {fileID: 0}
-    - target: {fileID: 1747810019642450598, guid: 7c71e739061db294697bb62fa8cb1db2,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1747810019642450598, guid: 7c71e739061db294697bb62fa8cb1db2,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1747810019642450598, guid: 7c71e739061db294697bb62fa8cb1db2,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1747810019642450598, guid: 7c71e739061db294697bb62fa8cb1db2,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1747810019642450598, guid: 7c71e739061db294697bb62fa8cb1db2,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1747810019642450598, guid: 7c71e739061db294697bb62fa8cb1db2,
-        type: 3}
-      propertyPath: m_RootOrder
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1747810019642450598, guid: 7c71e739061db294697bb62fa8cb1db2,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1747810019642450598, guid: 7c71e739061db294697bb62fa8cb1db2,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1747810019642450598, guid: 7c71e739061db294697bb62fa8cb1db2,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 7c71e739061db294697bb62fa8cb1db2, type: 3}
 --- !u!1 &1026979610
 GameObject:
   m_ObjectHideFlags: 0
@@ -754,8 +715,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 0, y: 145}
-  m_SizeDelta: {x: -962, y: 30}
+  m_AnchoredPosition: {x: 0, y: 100}
+  m_SizeDelta: {x: -200, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1026979612
 MonoBehaviour:
@@ -788,9 +749,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: '
-
-'
+  m_Text: 
 --- !u!222 &1026979613
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -798,7 +757,7 @@ CanvasRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1026979610}
-  m_CullTransparentMesh: 0
+  m_CullTransparentMesh: 1
 --- !u!1 &1268001100
 GameObject:
   m_ObjectHideFlags: 0
@@ -874,7 +833,7 @@ TilemapRenderer:
   m_ChunkCullingBounds: {x: 0, y: 0, z: 0}
   m_MaxChunkCount: 16
   m_MaxFrameAge: 16
-  m_SortOrder: 0
+  m_SortOrder: 3
   m_Mode: 0
   m_DetectChunkCullingBounds: 0
   m_MaskInteraction: 0
@@ -981,7 +940,7 @@ PrefabInstance:
     - target: {fileID: 958031488158201188, guid: 08c2df1c9612aee4780bf5706be6d80e,
         type: 3}
       propertyPath: m_RootOrder
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 958031488158201188, guid: 08c2df1c9612aee4780bf5706be6d80e,
         type: 3}
@@ -1018,6 +977,11 @@ PrefabInstance:
       propertyPath: carrySpeed
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 958031488158201191, guid: 08c2df1c9612aee4780bf5706be6d80e,
+        type: 3}
+      propertyPath: holdPos
+      value: 
+      objectReference: {fileID: 834515218}
     - target: {fileID: 958031489797194754, guid: 08c2df1c9612aee4780bf5706be6d80e,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
@@ -1102,7 +1066,7 @@ Canvas:
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 5
   m_TargetDisplay: 0
 --- !u!224 &1482656058
 RectTransform:
@@ -1117,7 +1081,7 @@ RectTransform:
   m_Children:
   - {fileID: 1770901267}
   m_Father: {fileID: 0}
-  m_RootOrder: 8
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -1156,6 +1120,12 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.4, y: 0.4}
   m_EdgeRadius: 0
+--- !u!4 &1699359977 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 958031488158201188, guid: 08c2df1c9612aee4780bf5706be6d80e,
+    type: 3}
+  m_PrefabInstance: {fileID: 1408271649}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1770901266
 GameObject:
   m_ObjectHideFlags: 0
@@ -1322,7 +1292,7 @@ TilemapRenderer:
   m_ChunkCullingBounds: {x: 0, y: 0, z: 0}
   m_MaxChunkCount: 16
   m_MaxFrameAge: 16
-  m_SortOrder: 0
+  m_SortOrder: 3
   m_Mode: 0
   m_DetectChunkCullingBounds: 0
   m_MaskInteraction: 0
@@ -1406,7 +1376,7 @@ Transform:
   m_Children:
   - {fileID: 380328948}
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2102914424
 GameObject:
@@ -1490,7 +1460,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2102914428
 MonoBehaviour:

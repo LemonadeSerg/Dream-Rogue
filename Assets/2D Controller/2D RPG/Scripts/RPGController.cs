@@ -23,14 +23,18 @@ public class RPGController : MonoBehaviour
     private bool fixedPos;
     private Vector2 lastDir;
 
-    private bool pickingUp = false;
-    private bool holding = false;
+    public bool pickingUp = false;
+    public bool holding = false;
 
     public BoxCollider2D interactionBox;
 
     public ContactFilter2D interactionContactFilter;
 
     public int objectsInInteraction;
+
+    public GameObject holdPos;
+
+    public EntityBase HeldEb;
 
     // Start is called before the first frame update
     private void Start()
@@ -51,6 +55,11 @@ public class RPGController : MonoBehaviour
             lastDir = rb.velocity.normalized;
             rb.velocity = Vector2.zero;
         }
+
+        if (holding)
+        {
+            HeldEb.transform.position = holdPos.transform.position;
+        }
         pushAnimationMotionToAnimtor();
     }
 
@@ -69,8 +78,13 @@ public class RPGController : MonoBehaviour
 
         if (animator.GetCurrentAnimatorStateInfo(0).IsName("Idle_Pickup") || animator.GetCurrentAnimatorStateInfo(0).IsName("Walking_Pickup"))
         {
-            pickingUp = false;
-            fixedPos = false;
+            if (pickingUp)
+            {
+                holding = true;
+                pickingUp = false;
+                fixedPos = false;
+                HeldEb.GetComponent<PolygonCollider2D>().enabled = false;
+            }
         }
     }
 
@@ -83,33 +97,33 @@ public class RPGController : MonoBehaviour
             Dash();
         if (!dashing && !fixedPos)
         {
-            if (Input.GetKeyDown(KeyCode.Z) && !holding)
-                pickup();
-            else if (Input.GetKeyDown(KeyCode.Z) && holding)
-                throwO();
-        }
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            Collider2D[] collidersInInteraction = new Collider2D[10];
-            objectsInInteraction = interactionBox.OverlapCollider(interactionContactFilter, collidersInInteraction);
-            for (int i = 0; i < objectsInInteraction; i++)
+            if (Input.GetKeyDown(KeyCode.E) && !holding)
             {
-                if (collidersInInteraction[i].GetComponent<EntityBase>() != null)
+                Collider2D[] collidersInInteraction = new Collider2D[10];
+                objectsInInteraction = interactionBox.OverlapCollider(interactionContactFilter, collidersInInteraction);
+                for (int i = 0; i < objectsInInteraction; i++)
                 {
-                    collidersInInteraction[i].GetComponent<EntityBase>().Interact();
+                    if (collidersInInteraction[i].GetComponent<EntityBase>() != null)
+                    {
+                        collidersInInteraction[i].GetComponent<EntityBase>().Interact(this);
+                    }
                 }
             }
-        }
-        if (Input.GetKeyDown(KeyCode.F))
-        {
-            Collider2D[] collidersInInteraction = new Collider2D[10];
+            else
+            if (Input.GetKeyDown(KeyCode.E) && holding)
+                throwO();
 
-            objectsInInteraction = interactionBox.OverlapCollider(interactionContactFilter, collidersInInteraction);
-            for (int i = 0; i < objectsInInteraction; i++)
+            if (Input.GetKeyDown(KeyCode.F) && !holding)
             {
-                if (collidersInInteraction[i].GetComponent<EntityBase>() != null)
+                Collider2D[] collidersInInteraction = new Collider2D[10];
+
+                objectsInInteraction = interactionBox.OverlapCollider(interactionContactFilter, collidersInInteraction);
+                for (int i = 0; i < objectsInInteraction; i++)
                 {
-                    collidersInInteraction[i].GetComponent<EntityBase>().Hit(EntityManagmnet.hitType.hand);
+                    if (collidersInInteraction[i].GetComponent<EntityBase>() != null)
+                    {
+                        collidersInInteraction[i].GetComponent<EntityBase>().Hit(EntityManagmnet.hitType.hand);
+                    }
                 }
             }
         }
@@ -157,15 +171,16 @@ public class RPGController : MonoBehaviour
         animator.SetBool("Holding", holding);
     }
 
-    private void pickup()
+    public void pickup(EntityBase eb)
     {
+        HeldEb = eb;
         pickingUp = true;
-        holding = true;
         fixPos();
     }
 
     private void throwO()
     {
+        HeldEb.GetComponent<PolygonCollider2D>().enabled = true;
         pickingUp = false;
         holding = false;
     }
@@ -182,5 +197,23 @@ public class RPGController : MonoBehaviour
         dashInitTime = Time.time;
         dashDir = rb.velocity.normalized;
         dashing = true;
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        print(collision.ToString());
+        if (collision.gameObject.GetComponent<EntityBase>() != null)
+        {
+            collision.gameObject.GetComponent<EntityBase>().collide(this);
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        print(collision.ToString());
+        if (collision.GetComponent<EntityBase>() != null)
+        {
+            collision.GetComponent<EntityBase>().collide(this);
+        }
     }
 }

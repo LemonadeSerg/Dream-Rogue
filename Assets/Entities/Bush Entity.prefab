@@ -47,6 +47,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   OriginCell: {x: 0, y: 0}
   sprite: {fileID: 21300000, guid: 334a1c3bbbeb6c645bc1b30c9279df1c, type: 3}
+  wlm: {fileID: 0}
+  health: 0
+  metaText: Bush
+  Solid: 1
+  name: Bush
   behaviour: 0
 --- !u!212 &1747810019642450599
 SpriteRenderer:

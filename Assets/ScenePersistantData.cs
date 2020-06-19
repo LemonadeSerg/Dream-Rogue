@@ -11,6 +11,7 @@ public static class ScenePersistantData
     public static List<EntityBase> entities;
     public static List<RoomData> rooms;
     public static bool paused;
+    public static int DreamFragments;
 
     public static void addTile(Sprite sprite)
     {

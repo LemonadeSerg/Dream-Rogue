@@ -7,6 +7,8 @@ using Random = UnityEngine.Random;
 [System.Serializable]
 public class BoardData
 {
+    public int uniqueID = 0;
+
     [SerializeField]
     private int biomeID;
 

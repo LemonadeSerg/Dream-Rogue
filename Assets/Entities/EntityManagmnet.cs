@@ -10,7 +10,9 @@ public class EntityManagmnet : MonoBehaviour
     {
         Bush,
         Rock,
-        cow,
+        Cow,
+        Sign,
+        DFrag,
     }
 
     public enum hitType
@@ -20,6 +22,6 @@ public class EntityManagmnet : MonoBehaviour
         explosion,
         fire,
         arrow,
+        boomerang,
     }
-
 }

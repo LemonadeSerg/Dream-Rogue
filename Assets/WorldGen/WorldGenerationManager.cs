@@ -13,17 +13,11 @@ public class WorldGenerationManager : MonoBehaviour
     public Vector2Int mapSize = new Vector2Int(100, 100);
     public BoardData[,] map;
 
-    public GUIStyle debugStyle;
-
     public int biomeCount = 6;
 
-    private int bio1;
-
     private bool biomeGrown = false;
-    private bool heatmapGenerated = false;
     private bool traitsMarked = false;
     private bool ouWallsGenerated = false;
-    private bool inWallsGenerated = false;
     private int seed;
 
     // Start is called before the first frame update
@@ -38,10 +32,8 @@ public class WorldGenerationManager : MonoBehaviour
         newWallGen = new WallGeneration();
         worldSaver = new WorldSaver();
         biomeGrown = false;
-        heatmapGenerated = false;
         traitsMarked = false;
         ouWallsGenerated = false;
-        inWallsGenerated = false;
 
         init();
     }
@@ -60,16 +52,6 @@ public class WorldGenerationManager : MonoBehaviour
             newWallGen.wallOffBiomes(map);
             ouWallsGenerated = true;
         }
-
-        /*while (!inWallsGenerated)
-        {
-            newWallGen.addFloatingWall(map, 10);
-            if (newWallGen.noMore)
-            {
-                newWallGen.addPerimeterBreakoffs(map);
-                inWallsGenerated = true;
-            }
-        }*/
         while (!newWallGen.wallGened)
         {
             newWallGen.buildWall(map, 60);

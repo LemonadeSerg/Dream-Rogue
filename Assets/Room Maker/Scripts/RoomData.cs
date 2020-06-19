@@ -19,8 +19,10 @@ public class RoomData
     public BoardData.OrientationType orientationType;
     public string[] entityName;
     public Vector2[] entityPos;
+    public string[] metaText;
+    public int[] entityHealth;
 
-    public string ToString()
+    public override string ToString()
     {
         return roomName;
     }

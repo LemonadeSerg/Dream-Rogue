@@ -151,12 +151,18 @@ public class WorldLoaderManager : MonoBehaviour
                     EntityBase eb = go.AddComponent<EntityBase>();
                     eb.sprite = ScenePersistantData.getEntityFromName(loadingRoomData.entityName[i]).sprite;
                     eb.behaviour = ScenePersistantData.getEntityFromName(loadingRoomData.entityName[i]).behaviour;
+                    eb.metaText = loadingRoomData.metaText[i];
+                    eb.health = loadingRoomData.entityHealth[i];
                     eb.wlm = this;
                     eb.init();
                     go.transform.position = (pos * roomSize) + loadingRoomData.entityPos[i];
                     eb.OriginCell = pos;
                 }
                 killCount[pos.x, pos.y] = loadingRoomData.entityName.Length;
+            }
+            if (map[pos.x, pos.y].uniqueID == 0)
+            {
+                map[pos.x, pos.y].uniqueID = Random.Range(0, 99999);
             }
         }
     }

@@ -29,8 +29,9 @@ public class RoomMaker : MonoBehaviour
     public InputField RoomNameField;
     public Dropdown loadRoomName;
     public Dropdown layerChangeDd;
+    public InputField metaStringIn;
 
-    public string roomsPath;
+    private string roomsPath;
 
     // Start is called before the first frame update
 
@@ -84,17 +85,17 @@ public class RoomMaker : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && !Input.GetKey(KeyCode.LeftShift))
         {
             LeftClick();
         }
-        if (Input.GetMouseButton(0))
+        if (Input.GetMouseButton(0) && !Input.GetKey(KeyCode.LeftShift))
         {
             LeftHold();
         }
-        if (Input.GetMouseButton(1))
+        if (Input.GetMouseButton(1) && !Input.GetKey(KeyCode.LeftShift))
         {
-            RightClick();
+            RightHold();
         }
         if (Input.GetKeyDown(KeyCode.E))
         {
@@ -173,6 +174,11 @@ public class RoomMaker : MonoBehaviour
         }
     }
 
+    public void entityUpdateMeta(EntityBase eb)
+    {
+        eb.metaText = metaStringIn.text;
+    }
+
     private void changeTile()
     {
         if (currentSelection < ScenePersistantData.tileBases.ToArray().Length - 1)
@@ -195,9 +201,17 @@ public class RoomMaker : MonoBehaviour
             EntityBase eb = go.AddComponent<EntityBase>();
             eb.sprite = ScenePersistantData.entities[currentSelection].sprite;
             eb.behaviour = ScenePersistantData.entities[currentSelection].behaviour;
+            eb.health = ScenePersistantData.entities[currentSelection].health;
+            eb.metaText = ScenePersistantData.entities[currentSelection].metaText;
             eb.init();
-            go.transform.position = coordinate;
+            go.transform.position = new Vector3(mouseWorldPos.x, mouseWorldPos.y, 0);
         }
+    }
+
+    public void deleteEntity(EntityBase eb)
+    {
+        Destroy(eb.gameObject);
+        Destroy(eb);
     }
 
     private void LeftHold()
@@ -231,55 +245,58 @@ public class RoomMaker : MonoBehaviour
         }
     }
 
-    private void RightClick()
+    private void RightHold()
     {
         Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Vector3Int coordinate = gridBack.WorldToCell(mouseWorldPos);
-        if (selectedGrid == 0)
+        if (!entities)
         {
-            if (coordinate.x >= 0 && coordinate.x < roomSize && coordinate.y >= 0 && coordinate.y < roomSize)
-                tilemapBack.SetTile(coordinate, null);
-        }
-        if (selectedGrid == 1)
-        {
-            if (coordinate.x >= 0 && coordinate.x < roomSize && coordinate.y >= 0 && coordinate.y < roomSize)
-                decBTilemap.SetTile(coordinate, null);
-        }
-        if (selectedGrid == 2)
-        {
-            if (coordinate.x >= 0 && coordinate.x < roomSize && coordinate.y >= 0 && coordinate.y < roomSize)
-                tilemapCol.SetTile(coordinate, null);
-        }
-        if (selectedGrid == 3)
-        {
-            if (coordinate.x >= 0 && coordinate.x < roomSize && coordinate.y >= 0 && coordinate.y < roomSize)
-                decFTilemap.SetTile(coordinate, null);
-        }
-        if (coordinate.y < 0)
-            for (int x = 0; x < roomSize; x++)
+            if (selectedGrid == 0)
             {
-                for (int y = 0; y < roomSize; y++)
+                if (coordinate.x >= 0 && coordinate.x < roomSize && coordinate.y >= 0 && coordinate.y < roomSize)
+                    tilemapBack.SetTile(coordinate, null);
+            }
+            if (selectedGrid == 1)
+            {
+                if (coordinate.x >= 0 && coordinate.x < roomSize && coordinate.y >= 0 && coordinate.y < roomSize)
+                    decBTilemap.SetTile(coordinate, null);
+            }
+            if (selectedGrid == 2)
+            {
+                if (coordinate.x >= 0 && coordinate.x < roomSize && coordinate.y >= 0 && coordinate.y < roomSize)
+                    tilemapCol.SetTile(coordinate, null);
+            }
+            if (selectedGrid == 3)
+            {
+                if (coordinate.x >= 0 && coordinate.x < roomSize && coordinate.y >= 0 && coordinate.y < roomSize)
+                    decFTilemap.SetTile(coordinate, null);
+            }
+            if (coordinate.y < 0)
+                for (int x = 0; x < roomSize; x++)
                 {
-                    currentSelection = ScenePersistantData.tileIndexFromName(decFTilemap.GetTile(coordinate).name);
+                    for (int y = 0; y < roomSize; y++)
+                    {
+                        currentSelection = ScenePersistantData.tileIndexFromName(decFTilemap.GetTile(coordinate).name);
 
-                    if (selectedGrid == 0)
-                    {
-                        tilemapBack.SetTile(new Vector3Int(x, y, 0), ScenePersistantData.tileBases.ToArray()[currentSelection]);
-                    }
-                    if (selectedGrid == 1)
-                    {
-                        decBTilemap.SetTile(new Vector3Int(x, y, 0), ScenePersistantData.tileBases.ToArray()[currentSelection]);
-                    }
-                    if (selectedGrid == 2)
-                    {
-                        tilemapCol.SetTile(new Vector3Int(x, y, 0), ScenePersistantData.tileBases.ToArray()[currentSelection]);
-                    }
-                    if (selectedGrid == 3)
-                    {
-                        decFTilemap.SetTile(new Vector3Int(x, y, 0), ScenePersistantData.tileBases.ToArray()[currentSelection]);
+                        if (selectedGrid == 0)
+                        {
+                            tilemapBack.SetTile(new Vector3Int(x, y, 0), ScenePersistantData.tileBases.ToArray()[currentSelection]);
+                        }
+                        if (selectedGrid == 1)
+                        {
+                            decBTilemap.SetTile(new Vector3Int(x, y, 0), ScenePersistantData.tileBases.ToArray()[currentSelection]);
+                        }
+                        if (selectedGrid == 2)
+                        {
+                            tilemapCol.SetTile(new Vector3Int(x, y, 0), ScenePersistantData.tileBases.ToArray()[currentSelection]);
+                        }
+                        if (selectedGrid == 3)
+                        {
+                            decFTilemap.SetTile(new Vector3Int(x, y, 0), ScenePersistantData.tileBases.ToArray()[currentSelection]);
+                        }
                     }
                 }
-            }
+        }
     }
 
     public void saveRoom()
@@ -290,6 +307,9 @@ public class RoomMaker : MonoBehaviour
         List<string> DecFTiles = new List<string>();
         List<string> EntityName = new List<string>();
         List<Vector2> EntityPos = new List<Vector2>();
+        List<string> EntityMeta = new List<string>();
+        List<int> EntityHealth = new List<int>();
+
         RoomData roomData = new RoomData();
         roomData.roomSize = roomSize;
         for (int x = 0; x < roomSize; x++)
@@ -322,6 +342,8 @@ public class RoomMaker : MonoBehaviour
         {
             EntityName.Add(eb.name);
             EntityPos.Add(eb.transform.position);
+            EntityMeta.Add(eb.metaText);
+            EntityHealth.Add(eb.health);
         }
 
         roomData.collisionTiles = ColTiles.ToArray();
@@ -331,6 +353,8 @@ public class RoomMaker : MonoBehaviour
 
         roomData.entityName = EntityName.ToArray();
         roomData.entityPos = EntityPos.ToArray();
+        roomData.metaText = EntityMeta.ToArray();
+        roomData.entityHealth = EntityHealth.ToArray();
 
         roomData.roomName = RoomNameField.text;
         roomData.biomeID = int.Parse(BiomeIDField.text);
