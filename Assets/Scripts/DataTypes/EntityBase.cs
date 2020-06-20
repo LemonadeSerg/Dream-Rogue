@@ -12,6 +12,7 @@ public class EntityBase : MonoBehaviour
     public int health;
     public string metaText;
     public bool Solid = true;
+    public bool Pushable = false;
 
     public EntityManagmnet.Behaviour behaviour;
 
@@ -35,6 +36,17 @@ public class EntityBase : MonoBehaviour
             this.gameObject.GetComponent<PolygonCollider2D>().isTrigger = false;
         else
             this.gameObject.GetComponent<PolygonCollider2D>().isTrigger = true;
+        Rigidbody2D rb2d;
+        if (Pushable)
+        {
+            rb2d = this.gameObject.AddComponent<Rigidbody2D>();
+            rb2d.gravityScale = 0;
+            rb2d.interpolation = RigidbodyInterpolation2D.Interpolate;
+            rb2d.freezeRotation = true;
+            rb2d.bodyType = RigidbodyType2D.Dynamic;
+            rb2d.drag = 10f;
+            rb2d.mass = 20f;
+        }
     }
 
     // Update is called once per frame
@@ -52,8 +64,12 @@ public class EntityBase : MonoBehaviour
 
     public void Hit(EntityManagmnet.hitType hitType)
     {
-        if (behaviour == EntityManagmnet.Behaviour.Bush && hitType == EntityManagmnet.hitType.sword)
+        if (behaviour == EntityManagmnet.Behaviour.Bush)
+        {
+            Container con = ScenePersistantData.GetContainerFromName(metaText);
+            con.drop(wlm, this.transform.position);
             die();
+        }
     }
 
     public void Interact(RPGController player)
@@ -82,7 +98,6 @@ public class EntityBase : MonoBehaviour
         if (behaviour == EntityManagmnet.Behaviour.DFrag)
         {
             ScenePersistantData.DreamFragments += health;
-            MessageSystem.message("Dream Fragments : " + ScenePersistantData.DreamFragments.ToString());
             Destroy(this.gameObject);
             Destroy(this);
         }

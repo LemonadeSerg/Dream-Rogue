@@ -21,6 +21,8 @@ public class RoomData
     public Vector2[] entityPos;
     public string[] metaText;
     public int[] entityHealth;
+    public bool[] entitySolid;
+    public bool[] entityPushable;
 
     public override string ToString()
     {

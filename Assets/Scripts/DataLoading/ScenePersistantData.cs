@@ -9,6 +9,8 @@ public static class ScenePersistantData
     public static List<TileBase> tileBases;
     public static List<Sprite> tileSprites;
     public static List<EntityBase> entities;
+    public static List<Container> containers;
+
     public static List<RoomData> rooms;
     public static bool paused;
     public static int DreamFragments;
@@ -51,6 +53,17 @@ public static class ScenePersistantData
         }
 
         return entities[0];
+    }
+
+    public static Container GetContainerFromName(string name)
+    {
+        foreach (Container c in containers.ToArray())
+        {
+            if (c.name == name)
+                return c;
+        }
+
+        return containers[0];
     }
 }
 

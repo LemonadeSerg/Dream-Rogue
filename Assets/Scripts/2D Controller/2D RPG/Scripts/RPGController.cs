@@ -36,6 +36,12 @@ public class RPGController : MonoBehaviour
 
     public EntityBase HeldEb;
 
+    public bool pushing = false;
+    public float pushSpeed;
+
+    public Vector2 pushDir;
+    public GameObject pushingObj;
+
     // Start is called before the first frame update
     private void Start()
     {
@@ -92,13 +98,13 @@ public class RPGController : MonoBehaviour
     {
         axis.x = Input.GetAxis("Horizontal");
         axis.y = Input.GetAxis("Vertical");
-
         if (Input.GetButtonDown("Jump") && canDash && !holding && !pickingUp)
             Dash();
         if (!dashing && !fixedPos)
         {
             if (Input.GetKeyDown(KeyCode.E) && !holding)
             {
+                interactionBox.enabled = true;
                 Collider2D[] collidersInInteraction = new Collider2D[10];
                 objectsInInteraction = interactionBox.OverlapCollider(interactionContactFilter, collidersInInteraction);
                 for (int i = 0; i < objectsInInteraction; i++)
@@ -108,6 +114,7 @@ public class RPGController : MonoBehaviour
                         collidersInInteraction[i].GetComponent<EntityBase>().Interact(this);
                     }
                 }
+                interactionBox.enabled = false;
             }
             else
             if (Input.GetKeyDown(KeyCode.E) && holding)
@@ -115,6 +122,8 @@ public class RPGController : MonoBehaviour
 
             if (Input.GetKeyDown(KeyCode.F) && !holding)
             {
+                interactionBox.enabled = true;
+
                 Collider2D[] collidersInInteraction = new Collider2D[10];
 
                 objectsInInteraction = interactionBox.OverlapCollider(interactionContactFilter, collidersInInteraction);
@@ -125,6 +134,7 @@ public class RPGController : MonoBehaviour
                         collidersInInteraction[i].GetComponent<EntityBase>().Hit(EntityManagmnet.hitType.hand);
                     }
                 }
+                interactionBox.enabled = false;
             }
         }
         if (axis.x > 0)
@@ -180,6 +190,7 @@ public class RPGController : MonoBehaviour
 
     private void throwO()
     {
+        HeldEb.transform.position = interactionBox.transform.position + new Vector3(interactionBox.offset.x, interactionBox.offset.y);
         HeldEb.GetComponent<PolygonCollider2D>().enabled = true;
         pickingUp = false;
         holding = false;

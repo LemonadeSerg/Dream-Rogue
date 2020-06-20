@@ -147,16 +147,7 @@ public class WorldLoaderManager : MonoBehaviour
             {
                 for (int i = 0; i < loadingRoomData.entityName.Length; i++)
                 {
-                    GameObject go = new GameObject(loadingRoomData.entityName[i]);
-                    EntityBase eb = go.AddComponent<EntityBase>();
-                    eb.sprite = ScenePersistantData.getEntityFromName(loadingRoomData.entityName[i]).sprite;
-                    eb.behaviour = ScenePersistantData.getEntityFromName(loadingRoomData.entityName[i]).behaviour;
-                    eb.metaText = loadingRoomData.metaText[i];
-                    eb.health = loadingRoomData.entityHealth[i];
-                    eb.wlm = this;
-                    eb.init();
-                    go.transform.position = (pos * roomSize) + loadingRoomData.entityPos[i];
-                    eb.OriginCell = pos;
+                    spawnEntity(ScenePersistantData.getEntityFromName(loadingRoomData.entityName[i]), (pos * roomSize) + loadingRoomData.entityPos[i], loadingRoomData.metaText[i], loadingRoomData.entityHealth[i], loadingRoomData.entityPushable[i], loadingRoomData.entitySolid[i]);
                 }
                 killCount[pos.x, pos.y] = loadingRoomData.entityName.Length;
             }
@@ -165,6 +156,22 @@ public class WorldLoaderManager : MonoBehaviour
                 map[pos.x, pos.y].uniqueID = Random.Range(0, 99999);
             }
         }
+    }
+
+    public void spawnEntity(EntityBase eb, Vector2 pos, string metaText, int health, bool pushable, bool solid)
+    {
+        GameObject go = new GameObject(eb.name);
+        EntityBase eb2 = go.AddComponent<EntityBase>();
+        eb2.sprite = eb.sprite;
+        eb2.behaviour = eb.behaviour;
+        eb2.metaText = metaText;
+        eb2.health = health;
+        eb2.Pushable = pushable;
+        eb2.Solid = solid;
+        eb2.wlm = this;
+        eb2.init();
+        go.transform.position = pos;
+        eb2.OriginCell = getBoardAtVector(pos.x, pos.y);
     }
 
     public UnityEngine.Tilemaps.TileBase getTileBasefromName(string name)

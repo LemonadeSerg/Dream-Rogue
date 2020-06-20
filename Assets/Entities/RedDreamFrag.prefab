@@ -100,8 +100,8 @@ MonoBehaviour:
   wlm: {fileID: 0}
   health: 50
   metaText: 
-  Solid: 1
-  name: RedDreamFrag
+  Solid: 0
+  Pushable: 0
   behaviour: 4
 --- !u!60 &-7380321084175420518
 PolygonCollider2D:

@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 5732899650454013880}
   - component: {fileID: 5732899650454013881}
   m_Layer: 0
-  m_Name: Rock Entity
+  m_Name: Rock
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -51,7 +51,7 @@ MonoBehaviour:
   health: 0
   metaText: 
   Solid: 1
-  name: Rock
+  Pushable: 1
   behaviour: 1
 --- !u!212 &5732899650454013880
 SpriteRenderer:

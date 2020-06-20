@@ -203,6 +203,8 @@ public class RoomMaker : MonoBehaviour
             eb.behaviour = ScenePersistantData.entities[currentSelection].behaviour;
             eb.health = ScenePersistantData.entities[currentSelection].health;
             eb.metaText = ScenePersistantData.entities[currentSelection].metaText;
+            eb.Solid = ScenePersistantData.entities[currentSelection].Solid;
+            eb.Pushable = ScenePersistantData.entities[currentSelection].Pushable;
             eb.init();
             go.transform.position = new Vector3(mouseWorldPos.x, mouseWorldPos.y, 0);
         }
@@ -309,6 +311,8 @@ public class RoomMaker : MonoBehaviour
         List<Vector2> EntityPos = new List<Vector2>();
         List<string> EntityMeta = new List<string>();
         List<int> EntityHealth = new List<int>();
+        List<bool> EntitySolid = new List<bool>();
+        List<bool> EntityPushable = new List<bool>();
 
         RoomData roomData = new RoomData();
         roomData.roomSize = roomSize;
@@ -344,6 +348,9 @@ public class RoomMaker : MonoBehaviour
             EntityPos.Add(eb.transform.position);
             EntityMeta.Add(eb.metaText);
             EntityHealth.Add(eb.health);
+            EntityHealth.Add(eb.health);
+            EntitySolid.Add(eb.Solid);
+            EntityPushable.Add(eb.Pushable);
         }
 
         roomData.collisionTiles = ColTiles.ToArray();
@@ -355,6 +362,8 @@ public class RoomMaker : MonoBehaviour
         roomData.entityPos = EntityPos.ToArray();
         roomData.metaText = EntityMeta.ToArray();
         roomData.entityHealth = EntityHealth.ToArray();
+        roomData.entitySolid = EntitySolid.ToArray();
+        roomData.entityPushable = EntityPushable.ToArray();
 
         roomData.roomName = RoomNameField.text;
         roomData.biomeID = int.Parse(BiomeIDField.text);
