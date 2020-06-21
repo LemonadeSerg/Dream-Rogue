@@ -51,8 +51,8 @@ MonoBehaviour:
   health: 0
   metaText: Hello i'm a sign
   Solid: 1
-  name: Sign
-  behaviour: 3
+  Pushable: 0
+  behaviour: 2
 --- !u!212 &7777482255173558244
 SpriteRenderer:
   m_ObjectHideFlags: 0

@@ -102,7 +102,7 @@ MonoBehaviour:
   metaText: 
   Solid: 0
   Pushable: 0
-  behaviour: 4
+  behaviour: 3
 --- !u!60 &3867115973881545346
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -120,7 +120,7 @@ PolygonCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 0.40625, y: 0.40625}
+    oldSize: {x: 0.203125, y: 0.203125}
     newSize: {x: 0.40625, y: 0.40625}
     adaptiveTilingThreshold: 0.5
     drawMode: 0

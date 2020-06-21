@@ -11,9 +11,9 @@ public class RPGController : MonoBehaviour
     public float dashRechTime;
     public float dashTime;
 
-    private Vector2 axis;
+    public Vector2 axis;
     private Vector2 dashDir;
-    private Animator animator;
+    public Animator animator;
     private Rigidbody2D rb;
 
     public bool canDash;
@@ -21,7 +21,7 @@ public class RPGController : MonoBehaviour
     private float dashInitTime;
 
     private bool fixedPos;
-    private Vector2 lastDir;
+    public Vector2 lastDir;
 
     public bool pickingUp = false;
     public bool holding = false;
@@ -41,6 +41,12 @@ public class RPGController : MonoBehaviour
 
     public Vector2 pushDir;
     public GameObject pushingObj;
+
+    public ItemBase equipedItem;
+
+    public WorldLoaderManager wlm;
+
+    public GameObject arrowFireSpot;
 
     // Start is called before the first frame update
     private void Start()
@@ -94,6 +100,13 @@ public class RPGController : MonoBehaviour
         }
     }
 
+    public void spawnEntityinHand(EntityBase eb)
+    {
+        HeldEb = eb;
+        holding = true;
+        HeldEb.GetComponent<PolygonCollider2D>().enabled = false;
+    }
+
     private void InputHandling()
     {
         axis.x = Input.GetAxis("Horizontal");
@@ -102,6 +115,10 @@ public class RPGController : MonoBehaviour
             Dash();
         if (!dashing && !fixedPos)
         {
+            if (Input.GetMouseButtonDown(0) && !holding)
+            {
+                equipedItem.clickItem(wlm);
+            }
             if (Input.GetKeyDown(KeyCode.E) && !holding)
             {
                 interactionBox.enabled = true;
@@ -145,6 +162,15 @@ public class RPGController : MonoBehaviour
             interactionBox.offset = new Vector2(0f, -0.5f);
         if (axis.y > 0)
             interactionBox.offset = new Vector2(0f, 0.4f);
+
+        if (axis.x > 0)
+            arrowFireSpot.transform.localPosition = new Vector2(0.27f, -0.1f);
+        if (axis.x < 0)
+            arrowFireSpot.transform.localPosition = new Vector2(-0.27f, -0.1f);
+        if (axis.y < 0)
+            arrowFireSpot.transform.localPosition = new Vector2(0f, -0.35f);
+        if (axis.y > 0)
+            arrowFireSpot.transform.localPosition = new Vector2(0f, 0.35f);
     }
 
     private void applyMovement()
@@ -192,11 +218,15 @@ public class RPGController : MonoBehaviour
     {
         HeldEb.transform.position = interactionBox.transform.position + new Vector3(interactionBox.offset.x, interactionBox.offset.y);
         HeldEb.GetComponent<PolygonCollider2D>().enabled = true;
+        if (HeldEb.GetComponent<BombBehaviour>() != null)
+        {
+            HeldEb.GetComponent<BombBehaviour>().ignite();
+        }
         pickingUp = false;
         holding = false;
     }
 
-    private void fixPos()
+    public void fixPos()
     {
         lastDir = rb.velocity.normalized;
         rb.velocity = Vector2.zero;

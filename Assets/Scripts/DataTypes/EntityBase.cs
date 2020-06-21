@@ -17,6 +17,9 @@ public class EntityBase : MonoBehaviour
     public EntityManagmnet.Behaviour behaviour;
 
     private DreamFragBehaviour dreamFragBehaviour;
+    private BombBehaviour bombBehaviour;
+    private ExplosionBehaviour explosionBehaviour;
+    private ArrowBehaviour arrowBehaviour;
 
     // Start is called before the first frame update
     public void init()
@@ -27,16 +30,38 @@ public class EntityBase : MonoBehaviour
 
         SpriteRenderer sr = this.gameObject.AddComponent<SpriteRenderer>();
         sr.sprite = sprite;
-        this.gameObject.AddComponent<PolygonCollider2D>();
         sr.sortingOrder = 3;
-        if (behaviour == EntityManagmnet.Behaviour.DFrag)
-            dreamFragBehaviour = this.gameObject.AddComponent<DreamFragBehaviour>();
+        this.gameObject.AddComponent<PolygonCollider2D>();
 
         if (Solid)
             this.gameObject.GetComponent<PolygonCollider2D>().isTrigger = false;
         else
             this.gameObject.GetComponent<PolygonCollider2D>().isTrigger = true;
+
+        if (behaviour == EntityManagmnet.Behaviour.DFrag)
+        {
+            dreamFragBehaviour = this.gameObject.AddComponent<DreamFragBehaviour>();
+        }
+        if (behaviour == EntityManagmnet.Behaviour.Bomb)
+        {
+            bombBehaviour = this.gameObject.AddComponent<BombBehaviour>();
+            bombBehaviour.timer = health;
+            bombBehaviour.power = float.Parse(metaText);
+        }
+        if (behaviour == EntityManagmnet.Behaviour.Explosion)
+        {
+            explosionBehaviour = this.gameObject.AddComponent<ExplosionBehaviour>();
+            explosionBehaviour.power = float.Parse(metaText);
+        }
+
+        if (behaviour == EntityManagmnet.Behaviour.Arrow)
+        {
+            arrowBehaviour = this.gameObject.AddComponent<ArrowBehaviour>();
+            arrowBehaviour.damage = health;
+        }
+
         Rigidbody2D rb2d;
+
         if (Pushable)
         {
             rb2d = this.gameObject.AddComponent<Rigidbody2D>();
@@ -46,6 +71,25 @@ public class EntityBase : MonoBehaviour
             rb2d.bodyType = RigidbodyType2D.Dynamic;
             rb2d.drag = 10f;
             rb2d.mass = 20f;
+        }
+
+        if (behaviour == EntityManagmnet.Behaviour.Explosion || behaviour == EntityManagmnet.Behaviour.Sign || behaviour == EntityManagmnet.Behaviour.Bush)
+        {
+            rb2d = this.gameObject.AddComponent<Rigidbody2D>();
+            rb2d.gravityScale = 0;
+            rb2d.freezeRotation = true;
+            rb2d.interpolation = RigidbodyInterpolation2D.Interpolate;
+            rb2d.bodyType = RigidbodyType2D.Kinematic;
+        }
+        if (behaviour == EntityManagmnet.Behaviour.Arrow)
+        {
+            this.gameObject.GetComponent<PolygonCollider2D>().isTrigger = false;
+            rb2d = this.gameObject.AddComponent<Rigidbody2D>();
+            rb2d.useFullKinematicContacts = true;
+            rb2d.drag = 1f;
+            rb2d.gravityScale = 0;
+            rb2d.interpolation = RigidbodyInterpolation2D.Interpolate;
+            rb2d.bodyType = RigidbodyType2D.Dynamic;
         }
     }
 
@@ -64,6 +108,7 @@ public class EntityBase : MonoBehaviour
 
     public void Hit(EntityManagmnet.hitType hitType)
     {
+        print(this.name + " hit by " + hitType.ToString());
         if (behaviour == EntityManagmnet.Behaviour.Bush)
         {
             Container con = ScenePersistantData.GetContainerFromName(metaText);
@@ -77,7 +122,7 @@ public class EntityBase : MonoBehaviour
     {
         if (behaviour == EntityManagmnet.Behaviour.Sign)
             MessageSystem.message(metaText);
-        if (behaviour == EntityManagmnet.Behaviour.Rock || behaviour == EntityManagmnet.Behaviour.Bush)
+        if (behaviour == EntityManagmnet.Behaviour.Rock || behaviour == EntityManagmnet.Behaviour.Bush || behaviour == EntityManagmnet.Behaviour.Bomb)
             player.pickup(this);
     }
 
@@ -91,6 +136,10 @@ public class EntityBase : MonoBehaviour
         }
         Destroy(this.gameObject);
         Destroy(this);
+    }
+
+    public void activate()
+    {
     }
 
     public void collide(RPGController player)

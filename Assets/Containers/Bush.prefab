@@ -51,3 +51,4 @@ MonoBehaviour:
   entities:
   - RedDreamFrag
   - BlueDreamFrag
+  health: 0a00000014000000

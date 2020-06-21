@@ -616,9 +616,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 834515219}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: GameObject
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -758,6 +758,36 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1026979610}
   m_CullTransparentMesh: 1
+--- !u!1 &1150586328
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1150586329}
+  m_Layer: 8
+  m_Name: FireSpot
+  m_TagString: Player
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1150586329
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1150586328}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -0.272, y: -0.1, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1699359977}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1268001100
 GameObject:
   m_ObjectHideFlags: 0
@@ -885,7 +915,17 @@ PrefabInstance:
     - target: {fileID: 958031488158201176, guid: 08c2df1c9612aee4780bf5706be6d80e,
         type: 3}
       propertyPath: m_Name
-      value: Player (1)
+      value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 958031488158201176, guid: 08c2df1c9612aee4780bf5706be6d80e,
+        type: 3}
+      propertyPath: m_TagString
+      value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 958031488158201176, guid: 08c2df1c9612aee4780bf5706be6d80e,
+        type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 958031488158201186, guid: 08c2df1c9612aee4780bf5706be6d80e,
         type: 3}
@@ -997,11 +1037,37 @@ PrefabInstance:
       propertyPath: dashSpeed
       value: 10
       objectReference: {fileID: 0}
+    - target: {fileID: 958031488158201191, guid: 08c2df1c9612aee4780bf5706be6d80e,
+        type: 3}
+      propertyPath: wlm
+      value: 
+      objectReference: {fileID: 368270666}
+    - target: {fileID: 958031488158201191, guid: 08c2df1c9612aee4780bf5706be6d80e,
+        type: 3}
+      propertyPath: arrowFireSpot
+      value: 
+      objectReference: {fileID: 1150586328}
+    - target: {fileID: 958031488158201191, guid: 08c2df1c9612aee4780bf5706be6d80e,
+        type: 3}
+      propertyPath: equipedItem
+      value: 
+      objectReference: {fileID: 2969774602803154004, guid: 1fa2ffde099edaf4a8c5f5cdc71aa43c,
+        type: 3}
     - target: {fileID: 958031489797194754, guid: 08c2df1c9612aee4780bf5706be6d80e,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+    - target: {fileID: 958031489797194756, guid: 08c2df1c9612aee4780bf5706be6d80e,
+        type: 3}
+      propertyPath: m_TagString
+      value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 958031489797194756, guid: 08c2df1c9612aee4780bf5706be6d80e,
+        type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 08c2df1c9612aee4780bf5706be6d80e, type: 3}
 --- !u!1 &1482656054

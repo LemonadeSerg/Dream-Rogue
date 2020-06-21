@@ -158,7 +158,7 @@ public class WorldLoaderManager : MonoBehaviour
         }
     }
 
-    public void spawnEntity(EntityBase eb, Vector2 pos, string metaText, int health, bool pushable, bool solid)
+    public EntityBase spawnEntity(EntityBase eb, Vector2 pos, string metaText, int health, bool pushable, bool solid)
     {
         GameObject go = new GameObject(eb.name);
         EntityBase eb2 = go.AddComponent<EntityBase>();
@@ -172,6 +172,7 @@ public class WorldLoaderManager : MonoBehaviour
         eb2.init();
         go.transform.position = pos;
         eb2.OriginCell = getBoardAtVector(pos.x, pos.y);
+        return eb2;
     }
 
     public UnityEngine.Tilemaps.TileBase getTileBasefromName(string name)
