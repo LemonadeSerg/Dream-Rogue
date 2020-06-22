@@ -6,7 +6,7 @@ public class ExplosionBehaviour : MonoBehaviour
 {
     public float power;
     public bool growing;
-    public float explosionSpeed = 20f;
+    public float explosionSpeed = 40f;
 
     // Start is called before the first frame update
     private void Start()
@@ -39,10 +39,17 @@ public class ExplosionBehaviour : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        print(other.ToString() + "ExT");
         if (other.GetComponent<EntityBase>() != null)
         {
             other.GetComponent<EntityBase>().Hit(EntityManagmnet.hitType.explosion);
+        }
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.GetComponent<EntityBase>() != null)
+        {
+            collision.gameObject.GetComponent<EntityBase>().Hit(EntityManagmnet.hitType.explosion);
         }
     }
 }

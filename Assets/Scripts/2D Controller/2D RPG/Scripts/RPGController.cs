@@ -36,12 +36,6 @@ public class RPGController : MonoBehaviour
 
     public EntityBase HeldEb;
 
-    public bool pushing = false;
-    public float pushSpeed;
-
-    public Vector2 pushDir;
-    public GameObject pushingObj;
-
     public ItemBase equipedItem;
 
     public WorldLoaderManager wlm;
@@ -111,66 +105,85 @@ public class RPGController : MonoBehaviour
     {
         axis.x = Input.GetAxis("Horizontal");
         axis.y = Input.GetAxis("Vertical");
-        if (Input.GetButtonDown("Jump") && canDash && !holding && !pickingUp)
-            Dash();
-        if (!dashing && !fixedPos)
+        if (!fixedPos)
         {
-            if (Input.GetMouseButtonDown(0) && !holding)
+            if (!dashing)
             {
-                equipedItem.clickItem(wlm);
-            }
-            if (Input.GetKeyDown(KeyCode.E) && !holding)
-            {
-                interactionBox.enabled = true;
-                Collider2D[] collidersInInteraction = new Collider2D[10];
-                objectsInInteraction = interactionBox.OverlapCollider(interactionContactFilter, collidersInInteraction);
-                for (int i = 0; i < objectsInInteraction; i++)
+                if (!holding)
                 {
-                    if (collidersInInteraction[i].GetComponent<EntityBase>() != null)
+                    if (!pickingUp)
                     {
-                        collidersInInteraction[i].GetComponent<EntityBase>().Interact(this);
+                        if (Input.GetButtonDown("Jump") && canDash)
+                            Dash();
+                        if (Input.GetMouseButtonDown(0))
+                        {
+                            equipedItem.clickItem(wlm);
+                        }
+
+                        if (Input.GetKeyDown(KeyCode.E))
+                        {
+                            interactionBox.enabled = true;
+                            Collider2D[] collidersInInteraction = new Collider2D[10];
+                            objectsInInteraction = interactionBox.OverlapCollider(interactionContactFilter, collidersInInteraction);
+                            for (int i = 0; i < objectsInInteraction; i++)
+                            {
+                                if (collidersInInteraction[i].GetComponent<EntityBase>() != null)
+                                {
+                                    collidersInInteraction[i].GetComponent<EntityBase>().Interact(this);
+                                }
+                            }
+                            interactionBox.enabled = false;
+                        }
+
+                        if (Input.GetKeyDown(KeyCode.F))
+                        {
+                            interactionBox.enabled = true;
+
+                            Collider2D[] collidersInInteraction = new Collider2D[10];
+
+                            objectsInInteraction = interactionBox.OverlapCollider(interactionContactFilter, collidersInInteraction);
+                            for (int i = 0; i < objectsInInteraction; i++)
+                            {
+                                if (collidersInInteraction[i].GetComponent<EntityBase>() != null)
+                                {
+                                    collidersInInteraction[i].GetComponent<EntityBase>().Hit(EntityManagmnet.hitType.hand);
+                                }
+                            }
+                            interactionBox.enabled = false;
+                        }
+                    }
+                    else
+                    {
+                        if (Input.GetKeyDown(KeyCode.E))
+                            throwO();
                     }
                 }
-                interactionBox.enabled = false;
-            }
-            else
-            if (Input.GetKeyDown(KeyCode.E) && holding)
-                throwO();
-
-            if (Input.GetKeyDown(KeyCode.F) && !holding)
-            {
-                interactionBox.enabled = true;
-
-                Collider2D[] collidersInInteraction = new Collider2D[10];
-
-                objectsInInteraction = interactionBox.OverlapCollider(interactionContactFilter, collidersInInteraction);
-                for (int i = 0; i < objectsInInteraction; i++)
-                {
-                    if (collidersInInteraction[i].GetComponent<EntityBase>() != null)
-                    {
-                        collidersInInteraction[i].GetComponent<EntityBase>().Hit(EntityManagmnet.hitType.hand);
-                    }
-                }
-                interactionBox.enabled = false;
             }
         }
-        if (axis.x > 0)
-            interactionBox.offset = new Vector2(0.5f, -0.1f);
-        if (axis.x < 0)
-            interactionBox.offset = new Vector2(-0.5f, -0.1f);
-        if (axis.y < 0)
-            interactionBox.offset = new Vector2(0f, -0.5f);
-        if (axis.y > 0)
-            interactionBox.offset = new Vector2(0f, 0.4f);
 
-        if (axis.x > 0)
-            arrowFireSpot.transform.localPosition = new Vector2(0.27f, -0.1f);
-        if (axis.x < 0)
-            arrowFireSpot.transform.localPosition = new Vector2(-0.27f, -0.1f);
-        if (axis.y < 0)
-            arrowFireSpot.transform.localPosition = new Vector2(0f, -0.35f);
-        if (axis.y > 0)
-            arrowFireSpot.transform.localPosition = new Vector2(0f, 0.35f);
+        if (animator.GetFloat("YAxis") > 0 && animator.GetFloat("YAxis") > animator.GetFloat("XAxis") && animator.GetFloat("YAxis") > -animator.GetFloat("XAxis"))
+        {
+            arrowFireSpot.transform.localPosition = new Vector2(0f, 0.4f);
+            interactionBox.offset = new Vector2(0f, 0.4f);
+        }
+        else
+        if (animator.GetFloat("YAxis") < 0 && animator.GetFloat("YAxis") < animator.GetFloat("XAxis") && animator.GetFloat("YAxis") < -animator.GetFloat("XAxis"))
+        {
+            arrowFireSpot.transform.localPosition = new Vector2(0f, -0.4f);
+            interactionBox.offset = new Vector2(0f, -0.5f);
+        }
+        else
+        if (animator.GetFloat("XAxis") > 0 && animator.GetFloat("XAxis") > animator.GetFloat("YAxis") && animator.GetFloat("XAxis") > -animator.GetFloat("YAxis"))
+        {
+            arrowFireSpot.transform.localPosition = new Vector2(0.3f, -0.1f);
+            interactionBox.offset = new Vector2(-0.5f, -0.1f);
+        }
+        else
+        if (animator.GetFloat("XAxis") < 0 && animator.GetFloat("XAxis") < animator.GetFloat("YAxis") && animator.GetFloat("XAxis") < -animator.GetFloat("YAxis"))
+        {
+            arrowFireSpot.transform.localPosition = new Vector2(-0.3f, -0.1f);
+            interactionBox.offset = new Vector2(0.5f, -0.1f);
+        }
     }
 
     private void applyMovement()

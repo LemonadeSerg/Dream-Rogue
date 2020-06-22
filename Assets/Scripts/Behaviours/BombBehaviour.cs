@@ -37,7 +37,7 @@ public class BombBehaviour : MonoBehaviour
     private void explode()
     {
         exploded = true;
-        FindObjectOfType<WorldLoaderManager>().spawnEntity(ScenePersistantData.getEntityFromName("Explosion"), this.transform.position, power.ToString(), 0, false, false);
+        FindObjectOfType<WorldLoaderManager>().spawnEntity(ScenePersistantData.getEntityFromName("Explosion"), this.transform.position, power.ToString(), 0, false, true);
         Destroy(this.gameObject);
         Destroy(this);
     }

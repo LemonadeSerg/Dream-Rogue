@@ -15,6 +15,7 @@ public class EntityManagmnet : MonoBehaviour
         Bomb,
         Explosion,
         Arrow,
+        Switch,
     }
 
     public enum hitType

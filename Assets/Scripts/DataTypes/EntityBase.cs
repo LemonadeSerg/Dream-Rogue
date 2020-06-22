@@ -20,6 +20,7 @@ public class EntityBase : MonoBehaviour
     private BombBehaviour bombBehaviour;
     private ExplosionBehaviour explosionBehaviour;
     private ArrowBehaviour arrowBehaviour;
+    private SwitchBehaviour switchBehaviour;
 
     // Start is called before the first frame update
     public void init()
@@ -60,6 +61,13 @@ public class EntityBase : MonoBehaviour
             arrowBehaviour.damage = health;
         }
 
+        if (behaviour == EntityManagmnet.Behaviour.Switch)
+        {
+            switchBehaviour = this.gameObject.AddComponent<SwitchBehaviour>();
+            switchBehaviour.mode = health;
+            switchBehaviour.connectionString = metaText;
+            switchBehaviour.init();
+        }
         Rigidbody2D rb2d;
 
         if (Pushable)
@@ -80,6 +88,10 @@ public class EntityBase : MonoBehaviour
             rb2d.freezeRotation = true;
             rb2d.interpolation = RigidbodyInterpolation2D.Interpolate;
             rb2d.bodyType = RigidbodyType2D.Kinematic;
+            if (behaviour == EntityManagmnet.Behaviour.Explosion)
+            {
+                rb2d.useFullKinematicContacts = true;
+            }
         }
         if (behaviour == EntityManagmnet.Behaviour.Arrow)
         {
@@ -89,7 +101,7 @@ public class EntityBase : MonoBehaviour
             rb2d.drag = 1f;
             rb2d.gravityScale = 0;
             rb2d.interpolation = RigidbodyInterpolation2D.Interpolate;
-            rb2d.bodyType = RigidbodyType2D.Dynamic;
+            rb2d.bodyType = RigidbodyType2D.Kinematic;
         }
     }
 
@@ -114,6 +126,10 @@ public class EntityBase : MonoBehaviour
             Container con = ScenePersistantData.GetContainerFromName(metaText);
             con.drop(wlm, this.transform.position);
             die();
+        }
+        if (behaviour == EntityManagmnet.Behaviour.Switch)
+        {
+            switchBehaviour.hit();
         }
     }
 
@@ -140,6 +156,12 @@ public class EntityBase : MonoBehaviour
 
     public void activate()
     {
+        print(this.name + " Entity has been activated");
+    }
+
+    public void deactivate()
+    {
+        print(this.name + " Entity has been dectivated");
     }
 
     public void collide(RPGController player)
