@@ -19,7 +19,17 @@ public class BushBehaviour : BehaviourBase
         throw new System.NotImplementedException();
     }
 
-    public override void MoveUpdate()
+    public override void EUpdate()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public override void init()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public override void Deactivate()
     {
         throw new System.NotImplementedException();
     }

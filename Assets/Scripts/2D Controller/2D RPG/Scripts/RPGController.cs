@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(Animator))]
@@ -18,6 +19,7 @@ public class RPGController : MonoBehaviour
 
     public bool canDash;
     public bool dashing;
+
     private float dashInitTime;
 
     private bool fixedPos;
@@ -39,6 +41,9 @@ public class RPGController : MonoBehaviour
     public GameObject arrowFireSpot;
 
     public EntityBase heldObj;
+
+    public ItemBase item1;
+    public ItemBase item2;
 
     // Start is called before the first frame update
     private void Start()
@@ -135,6 +140,31 @@ public class RPGController : MonoBehaviour
                                     }
                             }
                         }
+
+                        if (item1 != null)
+                        {
+                            if (Input.GetMouseButtonDown(0))
+                            {
+                                item1.Down(wlm);
+                            }
+                            if (Input.GetMouseButtonUp(0))
+                            {
+                                item1.Up(wlm);
+                            }
+                            item1.actionState = Input.GetMouseButton(0);
+                        }
+                        if (item2 != null)
+                        {
+                            if (Input.GetMouseButtonDown(1))
+                            {
+                                item2.Down(wlm);
+                            }
+                            if (Input.GetMouseButtonUp(1))
+                            {
+                                item2.Up(wlm);
+                            }
+                            item2.actionState = Input.GetMouseButton(1);
+                        }
                     }
                 }
                 else
@@ -172,6 +202,13 @@ public class RPGController : MonoBehaviour
         }
     }
 
+    public void spawnToHand(EntityBase entityBase)
+    {
+        entityBase.gameObject.GetComponent<PolygonCollider2D>().isTrigger = true;
+        heldObj = entityBase;
+        holding = true;
+    }
+
     public void Pickup(EntityBase entity)
     {
         entity.gameObject.GetComponent<PolygonCollider2D>().isTrigger = true;
@@ -183,6 +220,8 @@ public class RPGController : MonoBehaviour
     private void throwObj()
     {
         heldObj.gameObject.GetComponent<PolygonCollider2D>().isTrigger = false;
+        if (heldObj.updB == EntityBase.updateBehaviours.Bomb)
+            heldObj.Activate();
         holding = false;
     }
 

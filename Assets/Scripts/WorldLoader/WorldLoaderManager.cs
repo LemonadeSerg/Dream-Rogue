@@ -156,7 +156,7 @@ public class WorldLoaderManager : MonoBehaviour
         }
     }
 
-    private void spawnEntity(EntityBase eb, EntityUniqueData euq, Vector2 pos)
+    public EntityBase spawnEntity(EntityBase eb, EntityUniqueData euq, Vector2 pos)
     {
         GameObject gb = new GameObject(eb.name);
         EntityBase eb2 = gb.AddComponent<EntityBase>();
@@ -166,16 +166,25 @@ public class WorldLoaderManager : MonoBehaviour
         eb2.solid = eb.solid;
         eb2.pushable = eb.pushable;
         eb2.pickable = eb.pickable;
+        eb2.staticObj = eb.staticObj;
         eb2.hitB = eb.hitB;
         eb2.actB = eb.actB;
         eb2.intB = eb.intB;
-        eb2.movB = eb.movB;
+        eb2.updB = eb.updB;
         eb2.uq = new EntityUniqueData();
         eb2.uq.health = euq.health;
         eb2.uq.speed = euq.speed;
         eb2.uq.power = euq.power;
         eb2.uq.message = euq.message;
+        eb2.uq.bombSpawn = euq.bombSpawn;
+        eb2.uq.fuse = euq.fuse;
+        eb2.uq.bombSpawn = euq.bombSpawn;
+        eb2.uq.damage = euq.damage;
+        eb2.uq.switchCode = euq.switchCode;
+        eb2.uq.switchMode = euq.switchMode;
+
         eb2.init();
+        return eb2;
     }
 
     public UnityEngine.Tilemaps.TileBase getTileBasefromName(string name)

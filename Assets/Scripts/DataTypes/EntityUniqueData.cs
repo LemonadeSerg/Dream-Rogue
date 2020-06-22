@@ -6,8 +6,13 @@ using UnityEngine;
 [Serializable]
 public class EntityUniqueData
 {
-    public int health;
-    public int speed;
-    public int power;
+    public float health;
+    public float speed;
+    public float power;
+    public float fuse;
     public string message;
+    public string bombSpawn;
+    public float damage;
+    public string switchCode;
+    public int switchMode;
 }

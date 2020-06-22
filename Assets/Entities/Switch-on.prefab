@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &1962343815879287858
+--- !u!1 &5880052888412860862
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,41 +8,60 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1962343815879287860}
-  - component: {fileID: 1962343815879287859}
+  - component: {fileID: 5880052888412860860}
+  - component: {fileID: 5880052888412860863}
   m_Layer: 0
-  m_Name: ItemBomb
+  m_Name: Switch-on
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &1962343815879287860
+--- !u!4 &5880052888412860860
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1962343815879287858}
+  m_GameObject: {fileID: 5880052888412860862}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 15.408845, y: 4.1701436, z: -0.0021362305}
+  m_LocalPosition: {x: 7.7805834, y: 3.080448, z: -17.545668}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1962343815879287859
+--- !u!114 &5880052888412860863
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1962343815879287858}
+  m_GameObject: {fileID: 5880052888412860862}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6ce9b37d0a8b09243a634bbb1319444d, type: 3}
+  m_Script: {fileID: 11500000, guid: 48557082ed0656c42919a6c6437d3bff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sprite: {fileID: 21300000, guid: 224574a1e7ae60d4da5cbde13dbc4c44, type: 3}
-  fuse: 5
-  strength: 5
+  wlm: {fileID: 0}
+  name: Switch-on
+  sprite: {fileID: 21300000, guid: 0f1b56aeba8377a4f91c071264e34a6a, type: 3}
+  solid: 1
+  pushable: 0
+  pickable: 0
+  staticObj: 1
+  uq:
+    health: 0
+    speed: 0
+    power: 0
+    fuse: 0
+    message: 
+    bombSpawn: 
+    damage: 0
+    switchCode: test
+    switchMode: 0
+  originCell: {x: 0, y: 0}
+  hitB: 1
+  actB: 0
+  updB: 4
+  intB: 0

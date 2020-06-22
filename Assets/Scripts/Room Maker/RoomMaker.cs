@@ -211,12 +211,16 @@ public class RoomMaker : MonoBehaviour
         eb.hitB = ScenePersistantData.entities.ToArray()[currentSelection].hitB;
         eb.actB = ScenePersistantData.entities.ToArray()[currentSelection].actB;
         eb.intB = ScenePersistantData.entities.ToArray()[currentSelection].intB;
-        eb.movB = ScenePersistantData.entities.ToArray()[currentSelection].movB;
+        eb.updB = ScenePersistantData.entities.ToArray()[currentSelection].updB;
         eb.uq = new EntityUniqueData();
         eb.uq.health = ScenePersistantData.entities.ToArray()[currentSelection].uq.health;
         eb.uq.speed = ScenePersistantData.entities.ToArray()[currentSelection].uq.speed;
         eb.uq.power = ScenePersistantData.entities.ToArray()[currentSelection].uq.power;
         eb.uq.message = ScenePersistantData.entities.ToArray()[currentSelection].uq.message;
+        eb.uq.bombSpawn = ScenePersistantData.entities.ToArray()[currentSelection].uq.bombSpawn;
+        eb.uq.damage = ScenePersistantData.entities.ToArray()[currentSelection].uq.damage;
+        eb.uq.switchCode = ScenePersistantData.entities.ToArray()[currentSelection].uq.switchCode;
+        eb.uq.switchMode = ScenePersistantData.entities.ToArray()[currentSelection].uq.switchMode;
         eb.init();
     }
 

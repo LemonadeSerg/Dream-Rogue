@@ -49,13 +49,17 @@ MonoBehaviour:
   solid: 1
   pushable: 0
   pickable: 1
+  staticObj: 1
   uq:
     health: 0
     speed: 2
     power: 0
+    fuse: 0
     message: 
+    bombSpawn: 
+    damage: 0
   originCell: {x: 0, y: 0}
   hitB: 2
   actB: 0
-  movB: 0
+  updB: 0
   intB: 0

@@ -6,7 +6,7 @@ public class EntityBase : MonoBehaviour
 {
     public WorldLoaderManager wlm;
 
-    private SpriteRenderer sr;
+    public SpriteRenderer sr;
     private Rigidbody2D rb;
     private PolygonCollider2D pc;
 
@@ -15,10 +15,11 @@ public class EntityBase : MonoBehaviour
     public bool solid;
     public bool pushable;
     public bool pickable;
+    public bool staticObj;
 
     private BehaviourBase hitBehaviour;
     private BehaviourBase activateBehaviour;
-    private BehaviourBase movementBehaviour;
+    private BehaviourBase updateBehaviour;
     private BehaviourBase interactBehaviour;
 
     public EntityUniqueData uq;
@@ -31,6 +32,8 @@ public class EntityBase : MonoBehaviour
         Hand,
         Arrow,
         Bomb,
+        Explosion,
+        Sword,
     }
 
     public enum hitBehaviours
@@ -45,17 +48,21 @@ public class EntityBase : MonoBehaviour
     public enum activateBehaviours
     {
         None,
+        Bomb,
     }
 
     public activateBehaviours actB;
 
-    public enum movementBehaviours
+    public enum updateBehaviours
     {
         None,
+        Bomb,
+        Explosion,
         Arrow,
+        Switch,
     }
 
-    public movementBehaviours movB;
+    public updateBehaviours updB;
 
     public enum interactBehaviours
     {
@@ -80,17 +87,19 @@ public class EntityBase : MonoBehaviour
         pc.isTrigger = !solid;
 
         rb = this.gameObject.AddComponent<Rigidbody2D>();
-        if (!pushable)
+        if (staticObj)
             rb.bodyType = RigidbodyType2D.Static;
-
+        rb.drag = 20;
+        rb.angularDrag = 10f;
         if (wlm != null)
             originCell = wlm.getBoardAtVector(this.transform.position.x, this.transform.position.y);
 
         switch (hitB)
         {
             case hitBehaviours.Switch:
-                //hitBehaviour = this.gameObject.AddComponent<SwitchBehaviour>();
-                //hitBahaviour.entity = this;
+                hitBehaviour = this.gameObject.AddComponent<SwitchBehaviour>();
+                hitBehaviour.entity = this;
+                hitBehaviour.init();
                 break;
 
             case hitBehaviours.Bush:
@@ -101,16 +110,7 @@ public class EntityBase : MonoBehaviour
             default:
                 break;
         }
-        switch (movB)
-        {
-            case movementBehaviours.Arrow:
-                //movementBehaviour = this.gameObject.AddComponent<ArrowBehaviour>();
-                //movementBehaviour.entity = this;
-                break;
 
-            default:
-                break;
-        }
         switch (intB)
         {
             case interactBehaviours.Sign:
@@ -122,14 +122,74 @@ public class EntityBase : MonoBehaviour
             default:
                 break;
         }
+        switch (updB)
+        {
+            case updateBehaviours.None:
+                break;
+
+            case updateBehaviours.Bomb:
+                if (this.gameObject.GetComponent<BombBehaviour>() == null)
+                    updateBehaviour = this.gameObject.AddComponent<BombBehaviour>();
+                else
+                    updateBehaviour = this.gameObject.GetComponent<BombBehaviour>();
+                break;
+
+            case updateBehaviours.Explosion:
+                updateBehaviour = this.gameObject.AddComponent<ExplosionBehaviour>();
+                updateBehaviour.entity = this;
+                rb.isKinematic = true;
+                rb.useFullKinematicContacts = true;
+                break;
+
+            case updateBehaviours.Arrow:
+                updateBehaviour = this.gameObject.AddComponent<ArrowBehaviour>();
+                updateBehaviour.entity = this;
+                rb.isKinematic = true;
+                rb.useFullKinematicContacts = true;
+                break;
+
+            case updateBehaviours.Switch:
+                if (this.gameObject.GetComponent<SwitchBehaviour>() == null)
+                    updateBehaviour = this.gameObject.AddComponent<SwitchBehaviour>();
+                else
+                    updateBehaviour = this.gameObject.GetComponent<BombBehaviour>();
+                break;
+
+            default:
+                break;
+        }
+        switch (actB)
+        {
+            case activateBehaviours.Bomb:
+                if (this.gameObject.GetComponent<BombBehaviour>() == null)
+                {
+                    activateBehaviour = this.gameObject.AddComponent<BombBehaviour>();
+                    activateBehaviour.init();
+                }
+                else
+                    activateBehaviour = this.gameObject.GetComponent<BombBehaviour>();
+                activateBehaviour.entity = this;
+                break;
+
+            case activateBehaviours.None:
+                break;
+
+            default:
+                break;
+        }
     }
 
     private void Update()
     {
+        if (!wlm.loaded[(int)originCell.x, (int)originCell.y])
+        {
+            Destroy(this.gameObject);
+        }
     }
 
     public void Hit(hitType hitType)
     {
+        print(this.name + " hit by type: " + hitType.ToString());
         if (hitBehaviour != null)
         {
             hitBehaviour.Hit(hitType);
@@ -156,11 +216,19 @@ public class EntityBase : MonoBehaviour
         }
     }
 
+    public void Deactivate()
+    {
+        if (activateBehaviour != null)
+        {
+            activateBehaviour.Deactivate();
+        }
+    }
+
     public void FixedUpdate()
     {
-        if (movementBehaviour != null)
+        if (updateBehaviour != null)
         {
-            activateBehaviour.MoveUpdate();
+            updateBehaviour.EUpdate();
         }
     }
 
