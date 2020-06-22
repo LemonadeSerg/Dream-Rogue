@@ -12,8 +12,15 @@ public class CameraMove : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        float xAxis = Input.GetAxis("Horizontal");
-        float yAxis = Input.GetAxis("Vertical");
+        float xAxis = 0, yAxis = 0;
+        if (Input.GetKey(KeyCode.UpArrow))
+            yAxis = 1;
+        if (Input.GetKey(KeyCode.DownArrow))
+            yAxis = -1;
+        if (Input.GetKey(KeyCode.LeftArrow))
+            xAxis = -1;
+        if (Input.GetKey(KeyCode.RightArrow))
+            xAxis = 1;
 
         this.transform.position = Vector3.Lerp(this.transform.position, this.transform.position + (Vector3.right * xAxis) + (Vector3.up * yAxis), 0.1f);
     }

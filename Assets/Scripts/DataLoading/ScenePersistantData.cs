@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -8,12 +9,12 @@ public static class ScenePersistantData
     public static string worldName;
     public static List<TileBase> tileBases;
     public static List<Sprite> tileSprites;
-    public static List<EntityBase> entities;
-    public static List<Container> containers;
 
     public static List<RoomData> rooms;
     public static bool paused;
     public static int DreamFragments;
+
+    public static List<EntityBase> entities;
 
     public static void addTile(Sprite sprite)
     {
@@ -21,6 +22,17 @@ public static class ScenePersistantData
         tile.sprite = sprite;
         tileBases.Add(tile);
         tileSprites.Add(tile.sprite);
+    }
+
+    public static EntityBase getEntityFromName(string name)
+    {
+        foreach (EntityBase eb in entities.ToArray())
+        {
+            if (eb.name == name)
+                return eb;
+        }
+
+        return null;
     }
 
     public static int tileIndexFromName(string name)
@@ -42,28 +54,6 @@ public static class ScenePersistantData
         }
 
         return null;
-    }
-
-    public static EntityBase getEntityFromName(string name)
-    {
-        foreach (EntityBase tb in entities.ToArray())
-        {
-            if (tb.name == name)
-                return tb;
-        }
-
-        return entities[0];
-    }
-
-    public static Container GetContainerFromName(string name)
-    {
-        foreach (Container c in containers.ToArray())
-        {
-            if (c.name == name)
-                return c;
-        }
-
-        return containers[0];
     }
 }
 

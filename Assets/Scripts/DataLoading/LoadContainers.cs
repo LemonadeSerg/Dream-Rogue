@@ -26,7 +26,7 @@ public class LoadContainers
         using (System.IO.StreamReader stream = new System.IO.StreamReader(fileName))
         {
             string json = stream.ReadToEnd();
-            ScenePersistantData.containers.Add(JsonUtility.FromJson<Container>(json));
+            //ScenePersistantData.containers.Add(JsonUtility.FromJson<Container>(json));
         }
     }
 }

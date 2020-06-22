@@ -17,14 +17,12 @@ public class RoomData
     public int biomeID;
     public BoardData.RoomType roomType;
     public BoardData.OrientationType orientationType;
-    public string[] entityName;
-    public Vector2[] entityPos;
-    public string[] metaText;
-    public int[] entityHealth;
-    public bool[] entitySolid;
-    public bool[] entityPushable;
+    public string[] EntityName;
+    public Vector2[] EntityPos;
+    public EntityUniqueData[] entityUniqueDatas;
 
     public override string ToString()
+
     {
         return roomName;
     }

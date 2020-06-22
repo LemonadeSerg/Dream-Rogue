@@ -8,16 +8,15 @@ public class DataPreloader : MonoBehaviour
     public TileBase[] tileBases;
     public Sprite[] tileSprites;
     public EntityBase[] entities;
-    public Container[] containers;
 
     // Start is called before the first frame update
     private void Start()
     {
         ScenePersistantData.tileBases = new List<TileBase>();
         ScenePersistantData.tileSprites = new List<Sprite>();
-        ScenePersistantData.entities = new List<EntityBase>();
         ScenePersistantData.rooms = new List<RoomData>();
-        ScenePersistantData.containers = new List<Container>();
+        ScenePersistantData.rooms = new List<RoomData>();
+        ScenePersistantData.entities = new List<EntityBase>();
 
         for (int i = 0; i < tileBases.Length; i++)
         {
@@ -29,13 +28,8 @@ public class DataPreloader : MonoBehaviour
         {
             ScenePersistantData.entities.Add(entities[i]);
         }
-        for (int i = 0; i < containers.Length; i++)
-        {
-            ScenePersistantData.containers.Add(containers[i]);
-        }
         new LoadExternalTiles().loadTiles();
         new LoadExternalRooms().loadRooms();
-        new LoadContainers().loadContainers();
     }
 
     // Update is called once per frame

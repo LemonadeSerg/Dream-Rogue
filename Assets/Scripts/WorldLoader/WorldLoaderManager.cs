@@ -143,36 +143,39 @@ public class WorldLoaderManager : MonoBehaviour
             {
                 loadConnectingCells(pos);
             }
-            if (loadingRoomData.entityName != null && !map[pos.x, pos.y].cleared)
-            {
-                for (int i = 0; i < loadingRoomData.entityName.Length; i++)
-                {
-                    spawnEntity(ScenePersistantData.getEntityFromName(loadingRoomData.entityName[i]), (pos * roomSize) + loadingRoomData.entityPos[i], loadingRoomData.metaText[i], loadingRoomData.entityHealth[i], loadingRoomData.entityPushable[i], loadingRoomData.entitySolid[i]);
-                }
-                killCount[pos.x, pos.y] = loadingRoomData.entityName.Length;
-            }
+
             if (map[pos.x, pos.y].uniqueID == 0)
             {
                 map[pos.x, pos.y].uniqueID = Random.Range(0, 99999);
             }
+
+            for (int i = 0; i < loadingRoomData.EntityName.Length; i++)
+            {
+                spawnEntity(ScenePersistantData.getEntityFromName(loadingRoomData.EntityName[i]), loadingRoomData.entityUniqueDatas[i], loadingRoomData.EntityPos[i] + (pos * roomSize));
+            }
         }
     }
 
-    public EntityBase spawnEntity(EntityBase eb, Vector2 pos, string metaText, int health, bool pushable, bool solid)
+    private void spawnEntity(EntityBase eb, EntityUniqueData euq, Vector2 pos)
     {
-        GameObject go = new GameObject(eb.name);
-        EntityBase eb2 = go.AddComponent<EntityBase>();
+        GameObject gb = new GameObject(eb.name);
+        EntityBase eb2 = gb.AddComponent<EntityBase>();
+        gb.transform.position = pos;
+        eb2.name = eb.name;
         eb2.sprite = eb.sprite;
-        eb2.behaviour = eb.behaviour;
-        eb2.metaText = metaText;
-        eb2.health = health;
-        eb2.Pushable = pushable;
-        eb2.Solid = solid;
-        eb2.wlm = this;
+        eb2.solid = eb.solid;
+        eb2.pushable = eb.pushable;
+        eb2.pickable = eb.pickable;
+        eb2.hitB = eb.hitB;
+        eb2.actB = eb.actB;
+        eb2.intB = eb.intB;
+        eb2.movB = eb.movB;
+        eb2.uq = new EntityUniqueData();
+        eb2.uq.health = euq.health;
+        eb2.uq.speed = euq.speed;
+        eb2.uq.power = euq.power;
+        eb2.uq.message = euq.message;
         eb2.init();
-        go.transform.position = pos;
-        eb2.OriginCell = getBoardAtVector(pos.x, pos.y);
-        return eb2;
     }
 
     public UnityEngine.Tilemaps.TileBase getTileBasefromName(string name)

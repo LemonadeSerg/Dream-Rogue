@@ -14,8 +14,6 @@ public class RoomMaker : MonoBehaviour
     public Tilemap tilemapCol;
     public Tilemap decFTilemap;
 
-    public bool entities = false;
-
     public int currentSelection = 1;
     public int selectedGrid = 1;
 
@@ -32,6 +30,8 @@ public class RoomMaker : MonoBehaviour
     public InputField metaStringIn;
 
     private string roomsPath;
+
+    private bool editingEntities = false;
 
     // Start is called before the first frame update
 
@@ -97,36 +97,40 @@ public class RoomMaker : MonoBehaviour
         {
             RightHold();
         }
-        if (Input.GetKeyDown(KeyCode.E))
+        if (Input.GetKeyDown(KeyCode.F1))
         {
-            entities = !entities;
             currentSelection = 0;
+            editingEntities = !editingEntities;
         }
         if (Input.mouseScrollDelta.y > 0.1f)
         {
             currentSelection++;
-            if (entities && currentSelection >= ScenePersistantData.entities.ToArray().Length)
-            {
-                currentSelection = 0;
-            }
-            if (!entities && currentSelection >= ScenePersistantData.tileBases.ToArray().Length)
-            {
-                currentSelection = 0;
-            }
+            if (!editingEntities)
+                if (currentSelection >= ScenePersistantData.tileBases.ToArray().Length)
+                {
+                    currentSelection = 0;
+                }
+                else if (editingEntities)
+                    if (currentSelection >= ScenePersistantData.entities.ToArray().Length)
+                    {
+                        currentSelection = 0;
+                    }
         }
         if (Input.mouseScrollDelta.y < -0.1f)
         {
             currentSelection--;
-            if (!entities && currentSelection <= 0)
-            {
-                currentSelection = ScenePersistantData.tileBases.ToArray().Length - 1;
-            }
-            if (entities && currentSelection <= 0)
-            {
-                currentSelection = ScenePersistantData.entities.ToArray().Length - 1;
-            }
+            if (!editingEntities)
+                if (currentSelection <= 0)
+                {
+                    currentSelection = ScenePersistantData.tileBases.ToArray().Length - 1;
+                }
+                else if (editingEntities)
+                    if (currentSelection <= 0)
+                    {
+                        currentSelection = ScenePersistantData.entities.ToArray().Length - 1;
+                    }
         }
-        if (!entities)
+        if (!editingEntities)
         {
             if (currentSelection > 0)
             {
@@ -149,7 +153,7 @@ public class RoomMaker : MonoBehaviour
                 selectorBot.transform.position = new Vector3(-999, -999);
             }
         }
-        if (entities)
+        else
         {
             if (currentSelection > 0)
             {
@@ -174,11 +178,6 @@ public class RoomMaker : MonoBehaviour
         }
     }
 
-    public void entityUpdateMeta(EntityBase eb)
-    {
-        eb.metaText = metaStringIn.text;
-    }
-
     private void changeTile()
     {
         if (currentSelection < ScenePersistantData.tileBases.ToArray().Length - 1)
@@ -195,32 +194,37 @@ public class RoomMaker : MonoBehaviour
     {
         Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Vector3Int coordinate = gridBack.WorldToCell(mouseWorldPos);
-        if (entities)
-        {
-            GameObject go = new GameObject(ScenePersistantData.entities[currentSelection].name);
-            EntityBase eb = go.AddComponent<EntityBase>();
-            eb.sprite = ScenePersistantData.entities[currentSelection].sprite;
-            eb.behaviour = ScenePersistantData.entities[currentSelection].behaviour;
-            eb.health = ScenePersistantData.entities[currentSelection].health;
-            eb.metaText = ScenePersistantData.entities[currentSelection].metaText;
-            eb.Solid = ScenePersistantData.entities[currentSelection].Solid;
-            eb.Pushable = ScenePersistantData.entities[currentSelection].Pushable;
-            eb.init();
-            go.transform.position = new Vector3(mouseWorldPos.x, mouseWorldPos.y, 0);
-        }
+        if (editingEntities)
+            spawnEntity(mouseWorldPos);
     }
 
-    public void deleteEntity(EntityBase eb)
+    private void spawnEntity(Vector2 pos)
     {
-        Destroy(eb.gameObject);
-        Destroy(eb);
+        GameObject gb = new GameObject(ScenePersistantData.entities.ToArray()[currentSelection].name);
+        EntityBase eb = gb.AddComponent<EntityBase>();
+        gb.transform.position = pos;
+        eb.name = ScenePersistantData.entities.ToArray()[currentSelection].name;
+        eb.sprite = ScenePersistantData.entities.ToArray()[currentSelection].sprite;
+        eb.solid = ScenePersistantData.entities.ToArray()[currentSelection].solid;
+        eb.pushable = ScenePersistantData.entities.ToArray()[currentSelection].pushable;
+        eb.pickable = ScenePersistantData.entities.ToArray()[currentSelection].pickable;
+        eb.hitB = ScenePersistantData.entities.ToArray()[currentSelection].hitB;
+        eb.actB = ScenePersistantData.entities.ToArray()[currentSelection].actB;
+        eb.intB = ScenePersistantData.entities.ToArray()[currentSelection].intB;
+        eb.movB = ScenePersistantData.entities.ToArray()[currentSelection].movB;
+        eb.uq = new EntityUniqueData();
+        eb.uq.health = ScenePersistantData.entities.ToArray()[currentSelection].uq.health;
+        eb.uq.speed = ScenePersistantData.entities.ToArray()[currentSelection].uq.speed;
+        eb.uq.power = ScenePersistantData.entities.ToArray()[currentSelection].uq.power;
+        eb.uq.message = ScenePersistantData.entities.ToArray()[currentSelection].uq.message;
+        eb.init();
     }
 
     private void LeftHold()
     {
         Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Vector3Int coordinate = gridBack.WorldToCell(mouseWorldPos);
-        if (!entities)
+        if (!editingEntities)
         {
             if (selectedGrid == 0)
             {
@@ -251,7 +255,7 @@ public class RoomMaker : MonoBehaviour
     {
         Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Vector3Int coordinate = gridBack.WorldToCell(mouseWorldPos);
-        if (!entities)
+        if (!editingEntities)
         {
             if (selectedGrid == 0)
             {
@@ -309,10 +313,7 @@ public class RoomMaker : MonoBehaviour
         List<string> DecFTiles = new List<string>();
         List<string> EntityName = new List<string>();
         List<Vector2> EntityPos = new List<Vector2>();
-        List<string> EntityMeta = new List<string>();
-        List<int> EntityHealth = new List<int>();
-        List<bool> EntitySolid = new List<bool>();
-        List<bool> EntityPushable = new List<bool>();
+        List<EntityUniqueData> EntityData = new List<EntityUniqueData>();
 
         RoomData roomData = new RoomData();
         roomData.roomSize = roomSize;
@@ -346,11 +347,7 @@ public class RoomMaker : MonoBehaviour
         {
             EntityName.Add(eb.name);
             EntityPos.Add(eb.transform.position);
-            EntityMeta.Add(eb.metaText);
-            EntityHealth.Add(eb.health);
-            EntityHealth.Add(eb.health);
-            EntitySolid.Add(eb.Solid);
-            EntityPushable.Add(eb.Pushable);
+            EntityData.Add(eb.uq);
         }
 
         roomData.collisionTiles = ColTiles.ToArray();
@@ -358,16 +355,12 @@ public class RoomMaker : MonoBehaviour
         roomData.decorationBTiles = decBTiles.ToArray();
         roomData.decorationFTiles = DecFTiles.ToArray();
 
-        roomData.entityName = EntityName.ToArray();
-        roomData.entityPos = EntityPos.ToArray();
-        roomData.metaText = EntityMeta.ToArray();
-        roomData.entityHealth = EntityHealth.ToArray();
-        roomData.entitySolid = EntitySolid.ToArray();
-        roomData.entityPushable = EntityPushable.ToArray();
-
         roomData.roomName = RoomNameField.text;
         roomData.biomeID = int.Parse(BiomeIDField.text);
 
+        roomData.EntityName = EntityName.ToArray();
+        roomData.EntityPos = EntityPos.ToArray();
+        roomData.entityUniqueDatas = EntityData.ToArray();
         roomData.orientationType = (BoardData.OrientationType)OrientationDropDown.value;
         roomData.roomType = (BoardData.RoomType)RoomTypeDropDown.value;
         saveRoom(roomData);
