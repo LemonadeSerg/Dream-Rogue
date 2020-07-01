@@ -251,6 +251,7 @@ MonoBehaviour:
   decorationfTiles: {fileID: 660517099}
   lastRoom: {x: 0, y: 0}
   firstRoom: 1
+  unloadDelay: 0.1
 --- !u!4 &368270667
 Transform:
   m_ObjectHideFlags: 0
@@ -1131,6 +1132,18 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2969774602803154004, guid: 1fa2ffde099edaf4a8c5f5cdc71aa43c,
         type: 3}
+    - target: {fileID: 958031488158201191, guid: 08c2df1c9612aee4780bf5706be6d80e,
+        type: 3}
+      propertyPath: item1
+      value: 
+      objectReference: {fileID: 8517339240405876651, guid: 558725c1c7b36dd408703200c6196581,
+        type: 3}
+    - target: {fileID: 958031488158201191, guid: 08c2df1c9612aee4780bf5706be6d80e,
+        type: 3}
+      propertyPath: item2
+      value: 
+      objectReference: {fileID: 186794614592538930, guid: 1fa2ffde099edaf4a8c5f5cdc71aa43c,
+        type: 3}
     - target: {fileID: 958031489797194754, guid: 08c2df1c9612aee4780bf5706be6d80e,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
@@ -1634,3 +1647,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   wlManger: {fileID: 368270666}
+  lerpFactor: 0.01
+  smoothTime: 0.3

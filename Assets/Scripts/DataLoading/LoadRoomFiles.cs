@@ -11,11 +11,8 @@ public class LoadExternalRooms
     {
         if (!Directory.Exists(WorldPath))
             Directory.CreateDirectory(WorldPath);
-        Debug.Log("Rooms directory:" + WorldPath);
         foreach (string file in System.IO.Directory.GetFiles(WorldPath))
         {
-            Debug.Log(file);
-
             if (file.EndsWith(".json"))
             {
                 LoadJson(file);
