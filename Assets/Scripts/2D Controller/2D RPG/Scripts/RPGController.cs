@@ -68,6 +68,11 @@ public class RPGController : MonoBehaviour
         pushAnimationMotionToAnimtor();
     }
 
+    internal void Hit(EntityBase.hitType hand, float damage)
+    {
+        print("Player hit by " + hand.ToString() + " for " + damage.ToString());
+    }
+
     private AnimatorStateInfo m_CurrentStateInfo;
 
     private void playerUpdater()

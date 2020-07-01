@@ -21,7 +21,7 @@ public class BiomeGen
 
     public void placeBiomeStarts(BoardData[,] map)
     {
-        for (int i = 1; i < biomeCount; i++)
+        for (int i = 1; i <= biomeCount; i++)
         {
             int Rand = Random.Range(0, map.GetLength(0) - 1);
             int Rand2 = Random.Range(0, map.GetLength(1) - 1);

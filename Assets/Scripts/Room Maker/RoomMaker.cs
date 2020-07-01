@@ -32,6 +32,14 @@ public class RoomMaker : MonoBehaviour
     private string roomsPath;
 
     private bool editingEntities = false;
+    private int selectionMax;
+
+    private bool lockEntitiesToGrid = false;
+
+    public int brushRadius = 1;
+
+    private Vector3 mouseWorldPos;
+    private Vector3Int coordinate;
 
     // Start is called before the first frame update
 
@@ -51,12 +59,12 @@ public class RoomMaker : MonoBehaviour
 
         for (int i = 0; i < ScenePersistantData.tileBases.ToArray().Length; i++)
         {
-            decFTilemap.SetTile(new Vector3Int(i % 10, (-i / 10) - 2, 0), ScenePersistantData.tileBases.ToArray()[i]);
+            decFTilemap.SetTile(new Vector3Int(i % roomSize, (-i / roomSize) - 2, 0), ScenePersistantData.tileBases.ToArray()[i]);
         }
 
         List<BoardData.OrientationType> orTypes = new List<BoardData.OrientationType>();
         List<string> orTypeName = new List<string>();
-        for (int i = 0; i <= 14; i++)
+        for (int i = 0; i < System.Enum.GetNames(typeof(BoardData.OrientationType)).Length; i++)
         {
             orTypes.Add((BoardData.OrientationType)i);
             orTypeName.Add(orTypes[i].ToString());
@@ -66,7 +74,7 @@ public class RoomMaker : MonoBehaviour
 
         List<BoardData.RoomType> rmTypes = new List<BoardData.RoomType>();
         List<string> rmTypeName = new List<string>();
-        for (int i = 0; i <= 5; i++)
+        for (int i = 0; i < System.Enum.GetNames(typeof(BoardData.RoomType)).Length; i++)
         {
             rmTypes.Add((BoardData.RoomType)i);
             rmTypeName.Add(rmTypes[i].ToString());
@@ -80,122 +88,140 @@ public class RoomMaker : MonoBehaviour
             roomNames.Add(ScenePersistantData.rooms[i].roomName);
         }
         loadRoomName.AddOptions(roomNames);
+
+        selectionMax = ScenePersistantData.tileBases.ToArray().Length;
     }
 
     // Update is called once per frame
     private void Update()
     {
+        mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        coordinate = gridBack.WorldToCell(mouseWorldPos);
+
         if (Input.GetMouseButtonDown(0) && !Input.GetKey(KeyCode.LeftShift))
         {
             LeftClick();
         }
+        if (Input.GetMouseButtonDown(1) && !Input.GetKey(KeyCode.LeftShift))
+        {
+            RightClick();
+        }
         if (Input.GetMouseButton(0) && !Input.GetKey(KeyCode.LeftShift))
         {
-            LeftHold();
+            paint(ScenePersistantData.tileBases.ToArray()[currentSelection]);
         }
         if (Input.GetMouseButton(1) && !Input.GetKey(KeyCode.LeftShift))
         {
-            RightHold();
+            paint(null);
         }
         if (Input.GetKeyDown(KeyCode.F1))
         {
             currentSelection = 0;
             editingEntities = !editingEntities;
+            if (editingEntities)
+                selectionMax = ScenePersistantData.entities.ToArray().Length;
+            else
+                selectionMax = ScenePersistantData.tileBases.ToArray().Length;
         }
-        if (Input.mouseScrollDelta.y > 0.1f)
+        if (Input.GetKeyDown(KeyCode.F2))
         {
-            currentSelection++;
-            if (!editingEntities)
-                if (currentSelection >= ScenePersistantData.tileBases.ToArray().Length)
-                {
-                    currentSelection = 0;
-                }
-                else if (editingEntities)
-                    if (currentSelection >= ScenePersistantData.entities.ToArray().Length)
-                    {
-                        currentSelection = 0;
-                    }
+            lockEntitiesToGrid = !lockEntitiesToGrid;
         }
-        if (Input.mouseScrollDelta.y < -0.1f)
-        {
-            currentSelection--;
-            if (!editingEntities)
-                if (currentSelection <= 0)
-                {
-                    currentSelection = ScenePersistantData.tileBases.ToArray().Length - 1;
-                }
-                else if (editingEntities)
-                    if (currentSelection <= 0)
-                    {
-                        currentSelection = ScenePersistantData.entities.ToArray().Length - 1;
-                    }
-        }
+        if (Input.GetKeyDown(KeyCode.KeypadPlus))
+            brushRadius++;
+        if (Input.GetKeyDown(KeyCode.KeypadMinus))
+            brushRadius--;
+
+        currentSelection = Mathf.Clamp(currentSelection + (int)Input.mouseScrollDelta.y, 0, selectionMax);
+
+        print(Input.mouseScrollDelta.y);
         if (!editingEntities)
         {
-            if (currentSelection > 0)
-            {
-                selectorTop.sprite = ScenePersistantData.tileSprites.ToArray()[currentSelection - 1];
-                selectorTop.transform.position = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10)) + Vector3.up;
-            }
-            else
-            {
-                selectorTop.transform.position = new Vector3(-999, -999);
-            }
-            selectorMid.sprite = ScenePersistantData.tileSprites.ToArray()[currentSelection];
-            selectorMid.transform.position = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10));
-            if (currentSelection < ScenePersistantData.tileSprites.ToArray().Length - 1)
-            {
-                selectorBot.sprite = ScenePersistantData.tileSprites.ToArray()[currentSelection + 1];
-                selectorBot.transform.position = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10)) + Vector3.down;
-            }
-            else
-            {
-                selectorBot.transform.position = new Vector3(-999, -999);
-            }
+            updateSelector(
+                ScenePersistantData.tileSprites.ToArray()[Mathf.Clamp(currentSelection - 1, 0, selectionMax - 1)],
+                ScenePersistantData.tileSprites.ToArray()[Mathf.Clamp(currentSelection, 0, selectionMax - 1)],
+                ScenePersistantData.tileSprites.ToArray()[Mathf.Clamp(currentSelection + 1, 0, selectionMax - 1)]);
         }
         else
         {
-            if (currentSelection > 0)
-            {
-                selectorTop.sprite = ScenePersistantData.entities.ToArray()[currentSelection - 1].sprite;
-                selectorTop.transform.position = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10)) + Vector3.up;
-            }
-            else
-            {
-                selectorTop.transform.position = new Vector3(-999, -999);
-            }
-            selectorMid.sprite = ScenePersistantData.entities.ToArray()[currentSelection].sprite;
-            selectorMid.transform.position = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10));
-            if (currentSelection < ScenePersistantData.entities.ToArray().Length - 1)
-            {
-                selectorBot.sprite = ScenePersistantData.entities.ToArray()[currentSelection + 1].sprite;
-                selectorBot.transform.position = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10)) + Vector3.down;
-            }
-            else
-            {
-                selectorBot.transform.position = new Vector3(-999, -999);
-            }
+            updateSelector(
+                ScenePersistantData.entities.ToArray()[Mathf.Clamp(currentSelection - 1, 0, selectionMax - 1)].sprite,
+                ScenePersistantData.entities.ToArray()[Mathf.Clamp(currentSelection, 0, selectionMax - 1)].sprite,
+                ScenePersistantData.entities.ToArray()[Mathf.Clamp(currentSelection + 1, 0, selectionMax - 1)].sprite);
         }
     }
 
-    private void changeTile()
+    private void updateSelector(Sprite top, Sprite mid, Sprite bot)
     {
-        if (currentSelection < ScenePersistantData.tileBases.ToArray().Length - 1)
-        {
-            currentSelection++;
-        }
+        Vector3 pos;
+        if (lockEntitiesToGrid)
+            pos = coordinate + new Vector3(0.5f, 0.5f);
         else
+            pos = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10));
+
+        if (top != null)
         {
-            currentSelection = 0;
+            selectorTop.sprite = top;
+            selectorTop.transform.position = pos + Vector3.up;
+        }
+
+        if (mid != null)
+        {
+            selectorMid.sprite = mid;
+            selectorMid.transform.position = pos;
+        }
+
+        if (bot != null)
+        {
+            selectorBot.sprite = bot;
+            selectorBot.transform.position = pos + Vector3.down;
         }
     }
 
     private void LeftClick()
     {
-        Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        Vector3Int coordinate = gridBack.WorldToCell(mouseWorldPos);
-        if (editingEntities)
-            spawnEntity(mouseWorldPos);
+        if (editingEntities && coordinate.x >= 0 && coordinate.x < roomSize && coordinate.y >= 0 && coordinate.y < roomSize)
+            if (!lockEntitiesToGrid)
+                spawnEntity(mouseWorldPos);
+            else
+                spawnEntity(new Vector2(coordinate.x + 0.5f, coordinate.y + 0.5f));
+
+        if (coordinate.x >= 0 && coordinate.x < roomSize && coordinate.y < 0)
+        {
+            currentSelection = ScenePersistantData.tileIndexFromName(decFTilemap.GetTile(coordinate).name);
+        }
+    }
+
+    private void RightClick()
+    {
+        if (coordinate.y < 0)
+        {
+            currentSelection = ScenePersistantData.tileIndexFromName(decFTilemap.GetTile(coordinate).name);
+            for (int x = 0; x < roomSize; x++)
+            {
+                for (int y = 0; y < roomSize; y++)
+                {
+                    switch (selectedGrid)
+                    {
+                        case 0:
+                            placeTileInMap(tilemapBack, new Vector3Int(x, y, 0), ScenePersistantData.tileBases.ToArray()[currentSelection]);
+                            break;
+
+                        case 1:
+                            placeTileInMap(decBTilemap, new Vector3Int(x, y, 0), ScenePersistantData.tileBases.ToArray()[currentSelection]);
+                            break;
+
+                        case 2:
+                            placeTileInMap(tilemapCol, new Vector3Int(x, y, 0), ScenePersistantData.tileBases.ToArray()[currentSelection]);
+                            break;
+
+                        case 3:
+                            placeTileInMap(decFTilemap, new Vector3Int(x, y, 0), ScenePersistantData.tileBases.ToArray()[currentSelection]);
+                            break;
+                    }
+                }
+            }
+        }
     }
 
     private void spawnEntity(Vector2 pos)
@@ -203,6 +229,7 @@ public class RoomMaker : MonoBehaviour
         GameObject gb = new GameObject(ScenePersistantData.entities.ToArray()[currentSelection].name);
         EntityBase eb = gb.AddComponent<EntityBase>();
         gb.transform.position = pos;
+
         eb.name = ScenePersistantData.entities.ToArray()[currentSelection].name;
         eb.sprite = ScenePersistantData.entities.ToArray()[currentSelection].sprite;
         eb.solid = ScenePersistantData.entities.ToArray()[currentSelection].solid;
@@ -212,100 +239,57 @@ public class RoomMaker : MonoBehaviour
         eb.actB = ScenePersistantData.entities.ToArray()[currentSelection].actB;
         eb.intB = ScenePersistantData.entities.ToArray()[currentSelection].intB;
         eb.updB = ScenePersistantData.entities.ToArray()[currentSelection].updB;
+        eb.staticObj = ScenePersistantData.entities.ToArray()[currentSelection].staticObj;
+
         eb.uq = new EntityUniqueData();
         eb.uq.health = ScenePersistantData.entities.ToArray()[currentSelection].uq.health;
         eb.uq.speed = ScenePersistantData.entities.ToArray()[currentSelection].uq.speed;
         eb.uq.power = ScenePersistantData.entities.ToArray()[currentSelection].uq.power;
+        eb.uq.fuse = ScenePersistantData.entities.ToArray()[currentSelection].uq.fuse;
         eb.uq.message = ScenePersistantData.entities.ToArray()[currentSelection].uq.message;
         eb.uq.bombSpawn = ScenePersistantData.entities.ToArray()[currentSelection].uq.bombSpawn;
         eb.uq.damage = ScenePersistantData.entities.ToArray()[currentSelection].uq.damage;
         eb.uq.switchCode = ScenePersistantData.entities.ToArray()[currentSelection].uq.switchCode;
         eb.uq.switchMode = ScenePersistantData.entities.ToArray()[currentSelection].uq.switchMode;
         eb.init();
+
+        eb.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Static;
     }
 
-    private void LeftHold()
+    private void placeTileInMap(Tilemap tm, Vector3Int tilePos, TileBase tb)
     {
-        Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        Vector3Int coordinate = gridBack.WorldToCell(mouseWorldPos);
-        if (!editingEntities)
-        {
-            if (selectedGrid == 0)
-            {
-                if (coordinate.x >= 0 && coordinate.x < roomSize && coordinate.y >= 0 && coordinate.y < roomSize)
-                    tilemapBack.SetTile(coordinate, ScenePersistantData.tileBases.ToArray()[currentSelection]);
-            }
-            if (selectedGrid == 1)
-            {
-                if (coordinate.x >= 0 && coordinate.x < roomSize && coordinate.y >= 0 && coordinate.y < roomSize)
-                    decBTilemap.SetTile(coordinate, ScenePersistantData.tileBases.ToArray()[currentSelection]);
-            }
-            if (selectedGrid == 2)
-            {
-                if (coordinate.x >= 0 && coordinate.x < roomSize && coordinate.y >= 0 && coordinate.y < roomSize)
-                    tilemapCol.SetTile(coordinate, ScenePersistantData.tileBases.ToArray()[currentSelection]);
-            }
-            if (selectedGrid == 3)
-            {
-                if (coordinate.x >= 0 && coordinate.x < roomSize && coordinate.y >= 0 && coordinate.y < roomSize)
-                    decFTilemap.SetTile(coordinate, ScenePersistantData.tileBases.ToArray()[currentSelection]);
-            }
-            if (coordinate.y < 0)
-                currentSelection = ScenePersistantData.tileIndexFromName(decFTilemap.GetTile(coordinate).name);
-        }
+        if (tilePos.x >= 0 && tilePos.x < roomSize && tilePos.y >= 0 && tilePos.y < roomSize)
+            tm.SetTile(tilePos, tb);
     }
 
-    private void RightHold()
+    private void paint(TileBase tile)
     {
-        Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        Vector3Int coordinate = gridBack.WorldToCell(mouseWorldPos);
-        if (!editingEntities)
+        if (!editingEntities && coordinate.x >= 0 && coordinate.x < roomSize && coordinate.y >= 0 && coordinate.y < roomSize)
         {
-            if (selectedGrid == 0)
+            for (int x = -brushRadius + 1; x < brushRadius; x++)
             {
-                if (coordinate.x >= 0 && coordinate.x < roomSize && coordinate.y >= 0 && coordinate.y < roomSize)
-                    tilemapBack.SetTile(coordinate, null);
-            }
-            if (selectedGrid == 1)
-            {
-                if (coordinate.x >= 0 && coordinate.x < roomSize && coordinate.y >= 0 && coordinate.y < roomSize)
-                    decBTilemap.SetTile(coordinate, null);
-            }
-            if (selectedGrid == 2)
-            {
-                if (coordinate.x >= 0 && coordinate.x < roomSize && coordinate.y >= 0 && coordinate.y < roomSize)
-                    tilemapCol.SetTile(coordinate, null);
-            }
-            if (selectedGrid == 3)
-            {
-                if (coordinate.x >= 0 && coordinate.x < roomSize && coordinate.y >= 0 && coordinate.y < roomSize)
-                    decFTilemap.SetTile(coordinate, null);
-            }
-            if (coordinate.y < 0)
-                for (int x = 0; x < roomSize; x++)
+                for (int y = -brushRadius + 1; y < brushRadius; y++)
                 {
-                    for (int y = 0; y < roomSize; y++)
+                    switch (selectedGrid)
                     {
-                        currentSelection = ScenePersistantData.tileIndexFromName(decFTilemap.GetTile(coordinate).name);
+                        case 0:
+                            placeTileInMap(tilemapBack, coordinate + new Vector3Int(x, y, 0), tile);
+                            break;
 
-                        if (selectedGrid == 0)
-                        {
-                            tilemapBack.SetTile(new Vector3Int(x, y, 0), ScenePersistantData.tileBases.ToArray()[currentSelection]);
-                        }
-                        if (selectedGrid == 1)
-                        {
-                            decBTilemap.SetTile(new Vector3Int(x, y, 0), ScenePersistantData.tileBases.ToArray()[currentSelection]);
-                        }
-                        if (selectedGrid == 2)
-                        {
-                            tilemapCol.SetTile(new Vector3Int(x, y, 0), ScenePersistantData.tileBases.ToArray()[currentSelection]);
-                        }
-                        if (selectedGrid == 3)
-                        {
-                            decFTilemap.SetTile(new Vector3Int(x, y, 0), ScenePersistantData.tileBases.ToArray()[currentSelection]);
-                        }
+                        case 1:
+                            placeTileInMap(decBTilemap, coordinate + new Vector3Int(x, y, 0), tile);
+                            break;
+
+                        case 2:
+                            placeTileInMap(tilemapCol, coordinate + new Vector3Int(x, y, 0), tile);
+                            break;
+
+                        case 3:
+                            placeTileInMap(decFTilemap, coordinate + new Vector3Int(x, y, 0), tile);
+                            break;
                     }
                 }
+            }
         }
     }
 

@@ -12,7 +12,7 @@ public class ItemBow : ItemBase
     {
         EntityUniqueData eud = new EntityUniqueData();
         eud.damage = damage;
-        EntityBase eb = wlm.spawnEntity(ScenePersistantData.getEntityFromName(projectileName), eud, wlm.player.GetComponent<RPGController>().arrowFireSpot.transform.position);
+        EntityBase eb = wlm.SpawnEntity(ScenePersistantData.getEntityFromName(projectileName), eud, wlm.player.GetComponent<RPGController>().arrowFireSpot.transform.position);
         eb.transform.gameObject.layer = 9;
 
         if (wlm.player.GetComponent<RPGController>().animator.GetFloat("YAxis") > 0 && wlm.player.GetComponent<RPGController>().animator.GetFloat("YAxis") > wlm.player.GetComponent<RPGController>().animator.GetFloat("XAxis") && wlm.player.GetComponent<RPGController>().animator.GetFloat("YAxis") > -wlm.player.GetComponent<RPGController>().animator.GetFloat("XAxis"))

@@ -180,13 +180,6 @@ public class BoardData
         ClearBLT,
     }
 
-    public void Init()
-    {
-        biomeID = 0;
-        outerShell = false;
-        connectedToOther = false;
-    }
-
     public int getWallCount()
     {
         int count = 0;

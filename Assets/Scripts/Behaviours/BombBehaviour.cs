@@ -23,7 +23,7 @@ public class BombBehaviour : BehaviourBase
     {
         if (ingited && Time.time > timeStart + this.entity.uq.fuse)
         {
-            this.entity.wlm.spawnEntity(ScenePersistantData.getEntityFromName(this.entity.uq.bombSpawn), this.entity.uq, this.transform.position);
+            this.entity.wlm.SpawnEntity(ScenePersistantData.getEntityFromName(this.entity.uq.bombSpawn), this.entity.uq, this.transform.position);
             Destroy(this.gameObject);
         }
     }

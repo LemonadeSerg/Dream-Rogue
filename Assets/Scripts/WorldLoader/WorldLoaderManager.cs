@@ -10,6 +10,10 @@ public class WorldLoaderManager : MonoBehaviour
     public BoardData[,] map;
     public GameObject[,] gMap;
     public bool[,] loaded;
+    public bool[,] loading;
+
+    public bool[,] tiled;
+
     public int[,] killCount;
     public GameObject player;
 
@@ -20,9 +24,11 @@ public class WorldLoaderManager : MonoBehaviour
     public UnityEngine.Tilemaps.Tilemap collisionTiles;
     public UnityEngine.Tilemaps.Tilemap decorationfTiles;
 
-    private System.DateTime beginRoomLoad;
-
     public Vector2Int lastRoom;
+
+    public bool firstRoom = true;
+
+    public float unloadDelay = 0.1f;
 
     // Start is called before the first frame update
     private void Start()
@@ -35,128 +41,184 @@ public class WorldLoaderManager : MonoBehaviour
         gMap = loadWorld.gMap;
         loaded = new bool[100, 100];
         killCount = new int[100, 100];
+        loading = new bool[100, 100];
         player.transform.position = new Vector3Int((int)worldinfo.playerPos.x, (int)worldinfo.playerPos.y, 0);
-        loadConnectingCells(getBoardAtVector(worldinfo.playerPos.x, worldinfo.playerPos.y));
-        loadRoom(getBoardAtVector(worldinfo.playerPos.x, worldinfo.playerPos.y));
+        RoomChange(GetBoardAtVector(worldinfo.playerPos.x, worldinfo.playerPos.y), GetBoardAtVector(worldinfo.playerPos.x, worldinfo.playerPos.y));
+        firstRoom = false;
     }
 
     // Update is called once per frame
     private void Update()
     {
-        if (getBoardAtVector(player.transform.position.x, player.transform.position.y) != lastRoom)
+        if (GetBoardAtVector(player.transform.position.x, player.transform.position.y) != lastRoom)
         {
-            roomChange(getBoardAtVector(player.transform.position.x, player.transform.position.y), lastRoom);
+            RoomChange(GetBoardAtVector(player.transform.position.x, player.transform.position.y), lastRoom);
         }
-        lastRoom = getBoardAtVector(player.transform.position.x, player.transform.position.y);
+        lastRoom = GetBoardAtVector(player.transform.position.x, player.transform.position.y);
     }
 
-    public void roomChange(Vector2Int curentRoom, Vector2Int lastRoom)
+    public void RoomChange(Vector2Int curentRoom, Vector2Int lastRoom)
     {
         print("Changing from room : " + lastRoom.ToString() + " to room : " + curentRoom.ToString());
-        loadConnectingCells(curentRoom);
-        unLoadConnectingCells(lastRoom, curentRoom - lastRoom);
+        for (int x = -1; x <= 1; x++)
+        {
+            for (int y = -1; y <= 1; y++)
+            {
+                object[] parms = new object[2] { new Vector2Int(x, y) + curentRoom, curentRoom - lastRoom };
+                StartCoroutine("LoadRoom", parms);
+            }
+        }
+        if (curentRoom.x > lastRoom.x)
+        {
+            for (int y = -1; y <= 1; y++)
+            {
+                object[] parms = new object[2] { new Vector2Int(-1, y) + lastRoom, curentRoom - lastRoom };
+                StartCoroutine("UnloadRoom", parms);
+            }
+        }
+        else
+        if (curentRoom.x < lastRoom.x)
+        {
+            for (int y = -1; y <= 1; y++)
+            {
+                object[] parms = new object[2] { new Vector2Int(1, y) + lastRoom, curentRoom - lastRoom };
+                StartCoroutine("UnloadRoom", parms);
+            }
+        }
+        else
+        if (curentRoom.y > lastRoom.y)
+        {
+            for (int x = -1; x <= 1; x++)
+            {
+                object[] parms = new object[2] { new Vector2Int(x, -1) + lastRoom, curentRoom - lastRoom };
+                StartCoroutine("UnloadRoom", parms);
+            }
+        }
+        else
+       if (curentRoom.y < lastRoom.y)
+        {
+            for (int x = -1; x <= 1; x++)
+            {
+                object[] parms = new object[2] { new Vector2Int(x, 1) + lastRoom, curentRoom - lastRoom };
+                StartCoroutine("UnloadRoom", parms);
+            }
+        }
     }
 
-    public Vector2Int getBoardAtVector(float x, float y)
+    public Vector2Int GetBoardAtVector(float x, float y)
     {
         return new Vector2Int((int)(x / roomSize), (int)(y / roomSize));
     }
 
-    public void loadConnectingCells(Vector2Int pos)
+    private void loadTilesToMap(Vector2 pos, int x, int y, RoomData loadingRoomData)
     {
-        if (pos.x > 0 && !map[pos.x, pos.y].LeftWall)
-        {
-            loadRoom(new Vector2Int(pos.x - 1, pos.y));
-        }
-        if (pos.y > 0 && !map[pos.x, pos.y].BottomWall)
-        {
-            loadRoom(new Vector2Int(pos.x, pos.y - 1));
-        }
-        if (pos.x < worldinfo.width - 1 && !map[pos.x, pos.y].RightWall)
-        {
-            loadRoom(new Vector2Int(pos.x + 1, pos.y));
-        }
-        if (pos.y < worldinfo.height - 1 && !map[pos.x, pos.y].TopWall)
-        {
-            loadRoom(new Vector2Int(pos.x, pos.y + 1));
-        }
+        backgroundTiles.SetTile(new Vector3Int((int)((pos.x * roomSize) + x), (int)((pos.y * roomSize) + y), 0), getTileBasefromName(loadingRoomData.backgroundTiles[(int)(x * roomSize + y)]));
+        collisionTiles.SetTile(new Vector3Int((int)((pos.x * roomSize) + x), (int)((pos.y * roomSize) + y), 0), getTileBasefromName(loadingRoomData.collisionTiles[(int)(x * roomSize + y)]));
+        decorationBTiles.SetTile(new Vector3Int((int)((pos.x * roomSize) + x), (int)((pos.y * roomSize) + y), 0), getTileBasefromName(loadingRoomData.decorationBTiles[(int)(x * roomSize + y)]));
+        decorationfTiles.SetTile(new Vector3Int((int)((pos.x * roomSize) + x), (int)((pos.y * roomSize) + y), 0), getTileBasefromName(loadingRoomData.decorationFTiles[(int)(x * roomSize + y)]));
     }
 
-    public void unLoadConnectingCells(Vector2Int pos, Vector2Int dir)
+    private void unloadTilesToMap(Vector2 pos, int x, int y)
     {
-        if (dir != Vector2.right)
-        {
-            if (!map[pos.x, pos.y].RightWall)
-            {
-                unloadRoom(pos.x + 1, pos.y);
-            }
-        }
-        if (dir != Vector2.left)
-        {
-            if (!map[pos.x, pos.y].LeftWall)
-            {
-                unloadRoom(pos.x - 1, pos.y);
-            }
-        }
-        if (dir != Vector2.up)
-        {
-            if (!map[pos.x, pos.y].TopWall)
-            {
-                unloadRoom(pos.x, pos.y + 1);
-            }
-        }
-        if (dir != Vector2.down)
-        {
-            if (!map[pos.x, pos.y].BottomWall)
-            {
-                unloadRoom(pos.x, pos.y - 1);
-            }
-        }
+        backgroundTiles.SetTile(new Vector3Int((int)((pos.x * roomSize) + x), (int)((pos.y * roomSize) + y), 0), null);
+        collisionTiles.SetTile(new Vector3Int((int)((pos.x * roomSize) + x), (int)((pos.y * roomSize) + y), 0), null);
+        decorationBTiles.SetTile(new Vector3Int((int)((pos.x * roomSize) + x), (int)((pos.y * roomSize) + y), 0), null);
+        decorationfTiles.SetTile(new Vector3Int((int)((pos.x * roomSize) + x), (int)((pos.y * roomSize) + y), 0), null);
     }
 
-    public void loadRoom(Vector2Int pos)
+    private IEnumerator LoadRoom(object[] parms)
     {
-        if (!loaded[pos.x, pos.y])
+        Vector2Int pos = (Vector2Int)parms[0];
+        Vector2Int moveDir = (Vector2Int)parms[1];
+        if (pos.x >= 0 && pos.y >= 0 && pos.x < roomSize && pos.y < roomSize)
         {
-            RoomData loadingRoomData;
-            if (map[pos.x, pos.y].roomName == "")
+            if (!loaded[pos.x, pos.y])
             {
-                loadingRoomData = findValidRoom(map[pos.x, pos.y].BiomeID, map[pos.x, pos.y].RType, map[pos.x, pos.y].OrType);
-            }
-            else
-            {
-                loadingRoomData = findRoomFromName(map[pos.x, pos.y].roomName);
-            }
-            loaded[pos.x, pos.y] = true;
-            for (int x = 0; x < roomSize; x++)
-            {
-                for (int y = 0; y < roomSize; y++)
+                loaded[pos.x, pos.y] = true;
+                loading[pos.x, pos.y] = true;
+                RoomData loadingRoomData;
+                if (map[pos.x, pos.y].roomName == "")
                 {
-                    backgroundTiles.SetTile(new Vector3Int((int)((pos.x * roomSize) + x), (int)((pos.y * roomSize) + y), 0), getTileBasefromName(loadingRoomData.backgroundTiles[(int)(x * roomSize + y)]));
-                    collisionTiles.SetTile(new Vector3Int((int)((pos.x * roomSize) + x), (int)((pos.y * roomSize) + y), 0), getTileBasefromName(loadingRoomData.collisionTiles[(int)(x * roomSize + y)]));
-                    decorationBTiles.SetTile(new Vector3Int((int)((pos.x * roomSize) + x), (int)((pos.y * roomSize) + y), 0), getTileBasefromName(loadingRoomData.decorationBTiles[(int)(x * roomSize + y)]));
-                    decorationfTiles.SetTile(new Vector3Int((int)((pos.x * roomSize) + x), (int)((pos.y * roomSize) + y), 0), getTileBasefromName(loadingRoomData.decorationFTiles[(int)(x * roomSize + y)]));
+                    loadingRoomData = FindValidRoom(map[pos.x, pos.y].BiomeID, map[pos.x, pos.y].RType, map[pos.x, pos.y].OrType);
                 }
-            }
+                else
+                {
+                    loadingRoomData = FindRoomFromName(map[pos.x, pos.y].roomName);
+                }
 
-            if (map[pos.x, pos.y].connectedUp || map[pos.x, pos.y].connectedRight || map[pos.x, pos.y].connectedLeft || map[pos.x, pos.y].connectedDown)
-            {
-                loadConnectingCells(pos);
-            }
+                if (moveDir.x > 0)
+                    for (int x = 0; x < roomSize; x++)
+                    {
+                        for (int y = 0; y < roomSize; y++)
+                        {
+                            if (!firstRoom)
+                            {
+                                loadTilesToMap(pos, x, y, loadingRoomData);
+                                yield return null;
+                            }
+                        }
+                    }
+                else if (moveDir.x < 0)
+                    for (int x = roomSize - 1; x >= 0; x--)
+                    {
+                        for (int y = 0; y < roomSize; y++)
+                        {
+                            loadTilesToMap(pos, x, y, loadingRoomData);
+                            if (!firstRoom)
+                            {
+                                yield return null;
+                            }
+                        }
+                    }
+                else if (moveDir.y > 0)
+                    for (int y = 0; y < roomSize; y++)
+                    {
+                        for (int x = 0; x < roomSize; x++)
+                        {
+                            if (!firstRoom)
+                            {
+                                loadTilesToMap(pos, x, y, loadingRoomData);
+                                yield return null;
+                            }
+                        }
+                    }
+                else
+                    for (int y = roomSize - 1; y >= 0; y--)
+                    {
+                        for (int x = 0; x < roomSize; x++)
+                        {
+                            loadTilesToMap(pos, x, y, loadingRoomData);
+                            if (!firstRoom)
+                            {
+                                yield return null;
+                            }
+                        }
+                    }
 
-            if (map[pos.x, pos.y].uniqueID == 0)
-            {
-                map[pos.x, pos.y].uniqueID = Random.Range(0, 99999);
-            }
+                if (map[pos.x, pos.y].connectedUp || map[pos.x, pos.y].connectedRight || map[pos.x, pos.y].connectedLeft || map[pos.x, pos.y].connectedDown)
+                {
+                    // loadConnectingCells(pos);
+                }
 
-            for (int i = 0; i < loadingRoomData.EntityName.Length; i++)
-            {
-                spawnEntity(ScenePersistantData.getEntityFromName(loadingRoomData.EntityName[i]), loadingRoomData.entityUniqueDatas[i], loadingRoomData.EntityPos[i] + (pos * roomSize));
+                if (map[pos.x, pos.y].uniqueID == 0)
+                {
+                    map[pos.x, pos.y].uniqueID = Random.Range(0, 99999);
+                }
+
+                for (int i = 0; i < loadingRoomData.EntityName.Length; i++)
+                {
+                    SpawnEntity(ScenePersistantData.getEntityFromName(loadingRoomData.EntityName[i]), loadingRoomData.entityUniqueDatas[i], loadingRoomData.EntityPos[i] + (pos * roomSize));
+                    if (!firstRoom)
+                    {
+                        yield return null;
+                    }
+                }
+                loading[pos.x, pos.y] = false;
             }
         }
     }
 
-    public EntityBase spawnEntity(EntityBase eb, EntityUniqueData euq, Vector2 pos)
+    public EntityBase SpawnEntity(EntityBase eb, EntityUniqueData euq, Vector2 pos)
     {
         GameObject gb = new GameObject(eb.name);
         EntityBase eb2 = gb.AddComponent<EntityBase>();
@@ -171,6 +233,8 @@ public class WorldLoaderManager : MonoBehaviour
         eb2.actB = eb.actB;
         eb2.intB = eb.intB;
         eb2.updB = eb.updB;
+        eb2.staticObj = eb.staticObj;
+
         eb2.uq = new EntityUniqueData();
         eb2.uq.health = euq.health;
         eb2.uq.speed = euq.speed;
@@ -198,44 +262,102 @@ public class WorldLoaderManager : MonoBehaviour
         return null;
     }
 
-    public void unloadRoom(int px, int py)
+    public IEnumerator UnloadRoom(object[] parms)
     {
-        beginRoomLoad = System.DateTime.Now;
-        if (loaded[px, py])
+        Vector2Int pos = (Vector2Int)parms[0];
+        Vector2Int moveDir = (Vector2Int)parms[1];
+        if (pos.x >= 0 && pos.y >= 0 && pos.x < roomSize && pos.y < roomSize)
         {
-            loaded[px, py] = false;
-            for (int x = 0; x < roomSize; x++)
+            if (loaded[pos.x, pos.y] && !loading[pos.x, pos.y])
             {
-                for (int y = 0; y < roomSize; y++)
-                {
-                    backgroundTiles.SetTile(new Vector3Int((int)((px * roomSize) + x), (int)((py * roomSize) + y), 0), null);
-                    collisionTiles.SetTile(new Vector3Int((int)((px * roomSize) + x), (int)((py * roomSize) + y), 0), null);
-                    decorationBTiles.SetTile(new Vector3Int((int)((px * roomSize) + x), (int)((py * roomSize) + y), 0), null);
-                    decorationfTiles.SetTile(new Vector3Int((int)((px * roomSize) + x), (int)((py * roomSize) + y), 0), null);
-                }
+                loaded[pos.x, pos.y] = false;
+                if (moveDir.x < 0)
+                    for (int x = 0; x < roomSize; x++)
+                    {
+                        for (int y = 0; y < roomSize; y++)
+                        {
+                            if (!firstRoom && !loading[pos.x, pos.y])
+                            {
+                                unloadTilesToMap(pos, x, y);
+
+                                yield return new WaitForSeconds(unloadDelay);
+                            }
+                        }
+                    }
+                else if (moveDir.x > 0)
+                    for (int x = roomSize - 1; x >= 0; x--)
+                    {
+                        for (int y = 0; y < roomSize; y++)
+                        {
+                            if (!loading[pos.x, pos.y])
+                            {
+                                unloadTilesToMap(pos, x, y);
+                                if (!firstRoom)
+                                {
+                                    yield return new WaitForSeconds(unloadDelay);
+                                }
+                            }
+                        }
+                    }
+                else if (moveDir.y > 0)
+                    for (int x = 0; x < roomSize; x++)
+                    {
+                        for (int y = 0; y < roomSize; y++)
+                        {
+                            if (!loading[pos.x, pos.y])
+                            {
+                                unloadTilesToMap(pos, x, y);
+                                if (!firstRoom)
+                                {
+                                    yield return new WaitForSeconds(unloadDelay);
+                                }
+                            }
+                        }
+                    }
+                else
+                    for (int x = 0; x < roomSize; x++)
+                    {
+                        for (int y = roomSize - 1; y >= 0; y--)
+                        {
+                            if (!loading[pos.x, pos.y])
+                            {
+                                unloadTilesToMap(pos, x, y);
+                                if (!firstRoom)
+                                {
+                                    yield return new WaitForSeconds(unloadDelay);
+                                }
+                            }
+                        }
+                    }
             }
         }
     }
 
-    public RoomData findValidRoom(int biomeID, BoardData.RoomType roomType, BoardData.OrientationType orientationType)
+    public RoomData FindValidRoom(int biomeID, BoardData.RoomType roomType, BoardData.OrientationType orientationType)
     {
         List<RoomData> validRoom = new List<RoomData>();
         for (int i = 0; i < ScenePersistantData.rooms.Count; i++)
         {
-            if (ScenePersistantData.rooms[i].orientationType == orientationType)
+            if (ScenePersistantData.rooms[i].orientationType == orientationType && ScenePersistantData.rooms[i].biomeID == biomeID)
             {
                 validRoom.Add(ScenePersistantData.rooms[i]);
             }
         }
         if (validRoom.Count > 0)
         {
+            print("Finding Room with Biome ID: " + biomeID + " room type: " + roomType.ToString() + " orientation type: " + orientationType.ToString());
+
             int Rand = Random.Range(0, validRoom.Count);
+            print(validRoom.Count.ToString() + " valid rooms found. Selected room:" + validRoom[Rand]);
+
             return validRoom[Rand];
         }
+        print("Finding Room with Biome ID: " + biomeID + " room type: " + roomType.ToString() + " orientation type: " + orientationType.ToString());
+        print("no valid room found");
         return ScenePersistantData.rooms[0];
     }
 
-    public RoomData findRoomFromName(string name)
+    public RoomData FindRoomFromName(string name)
     {
         for (int i = 0; i < ScenePersistantData.rooms.Count; i++)
         {

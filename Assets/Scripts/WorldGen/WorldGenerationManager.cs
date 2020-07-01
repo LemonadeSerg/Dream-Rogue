@@ -13,7 +13,7 @@ public class WorldGenerationManager : MonoBehaviour
     public Vector2Int mapSize = new Vector2Int(100, 100);
     public BoardData[,] map;
 
-    public int biomeCount = 6;
+    public int biomeCount;
 
     private bool biomeGrown = false;
     private bool traitsMarked = false;
@@ -21,10 +21,9 @@ public class WorldGenerationManager : MonoBehaviour
     private int seed;
 
     // Start is called before the first frame update
-    public void gen(int seed, int biomeCount)
+    public void gen(int seed)
     {
         Random.InitState(seed);
-        this.biomeCount = biomeCount;
         this.seed = seed;
         biomeGen = new BiomeGen();
         traitGen = new BoardTraitGen();
@@ -61,7 +60,7 @@ public class WorldGenerationManager : MonoBehaviour
             traitGen.traitMarkBiome(map);
             traitsMarked = true;
         }
-        worldSaver.saveRoomInd(map, seed.ToString(), new Vector2(2, 2));
+        worldSaver.saveRoomInd(map, seed.ToString(), traitGen.spawnPoint);
         ScenePersistantData.worldName = seed.ToString();
     }
 
@@ -73,10 +72,9 @@ public class WorldGenerationManager : MonoBehaviour
             for (int y = 0; y < mapSize.y; y++)
             {
                 map[x, y] = new BoardData();
-                map[x, y].Init();
             }
         }
-        biomeGen.init(biomeCount + 1);
+        biomeGen.init(biomeCount);
         biomeActions.init();
         biomeGen.placeBiomeStarts(map);
         doGeneration();

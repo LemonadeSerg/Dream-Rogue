@@ -11,7 +11,6 @@ public class TitleMenu : MonoBehaviour
     public GameObject[] Menus;
     public InputField worldNameIn;
     public InputField seedIn;
-    public int roomMaker;
     public WorldGenerationManager worldGenManager;
     public DateTime worldGenStartTime;
     public AudioSource clicksound;
@@ -78,7 +77,7 @@ public class TitleMenu : MonoBehaviour
     public void genNewWorld()
     {
         worldGenStartTime = System.DateTime.Now;
-        worldGenManager.gen(int.Parse(seedIn.text), 4);
+        worldGenManager.gen(int.Parse(seedIn.text));
         print("Time taken to generate world :" + (worldGenStartTime - System.DateTime.Now).Seconds.ToString() + "." + (System.DateTime.Now - worldGenStartTime).Milliseconds.ToString() + " Seconds");
     }
 

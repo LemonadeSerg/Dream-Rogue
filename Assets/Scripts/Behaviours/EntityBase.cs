@@ -10,12 +10,12 @@ public class EntityBase : MonoBehaviour
     private Rigidbody2D rb;
     private PolygonCollider2D pc;
 
-    public string name;
     public Sprite sprite;
     public bool solid;
     public bool pushable;
     public bool pickable;
     public bool staticObj;
+    public bool removeOff;
 
     private BehaviourBase hitBehaviour;
     private BehaviourBase activateBehaviour;
@@ -25,6 +25,8 @@ public class EntityBase : MonoBehaviour
     public EntityUniqueData uq;
 
     public Vector2 originCell;
+
+    public bool onScreen = false;
 
     public enum hitType
     {
@@ -41,6 +43,7 @@ public class EntityBase : MonoBehaviour
         None,
         Switch,
         Bush,
+        Blob,
     }
 
     public hitBehaviours hitB;
@@ -60,6 +63,7 @@ public class EntityBase : MonoBehaviour
         Explosion,
         Arrow,
         Switch,
+        Blob,
     }
 
     public updateBehaviours updB;
@@ -74,12 +78,12 @@ public class EntityBase : MonoBehaviour
 
     private void Start()
     {
-        if (FindObjectOfType<WorldLoaderManager>() != null)
-            wlm = FindObjectOfType<WorldLoaderManager>();
     }
 
     public void init()
     {
+        if (wlm == null)
+            wlm = FindObjectOfType<WorldLoaderManager>();
         sr = this.gameObject.AddComponent<SpriteRenderer>();
         sr.sprite = sprite;
         sr.sortingOrder = 2;
@@ -91,8 +95,9 @@ public class EntityBase : MonoBehaviour
             rb.bodyType = RigidbodyType2D.Static;
         rb.drag = 20;
         rb.angularDrag = 10f;
+
         if (wlm != null)
-            originCell = wlm.getBoardAtVector(this.transform.position.x, this.transform.position.y);
+            originCell = wlm.GetBoardAtVector(this.transform.position.x, this.transform.position.y);
 
         switch (hitB)
         {
@@ -105,6 +110,12 @@ public class EntityBase : MonoBehaviour
             case hitBehaviours.Bush:
                 hitBehaviour = this.gameObject.AddComponent<BushBehaviour>();
                 hitBehaviour.entity = this;
+                break;
+
+            case hitBehaviours.Blob:
+                hitBehaviour = this.gameObject.AddComponent<BlobBehaviour>();
+                hitBehaviour.entity = this;
+                hitBehaviour.init();
                 break;
 
             default:
@@ -152,7 +163,14 @@ public class EntityBase : MonoBehaviour
                 if (this.gameObject.GetComponent<SwitchBehaviour>() == null)
                     updateBehaviour = this.gameObject.AddComponent<SwitchBehaviour>();
                 else
-                    updateBehaviour = this.gameObject.GetComponent<BombBehaviour>();
+                    updateBehaviour = this.gameObject.GetComponent<SwitchBehaviour>();
+                break;
+
+            case updateBehaviours.Blob:
+                if (this.gameObject.GetComponent<BlobBehaviour>() == null)
+                    updateBehaviour = this.gameObject.AddComponent<BlobBehaviour>();
+                else
+                    updateBehaviour = this.gameObject.GetComponent<BlobBehaviour>();
                 break;
 
             default:
@@ -181,59 +199,80 @@ public class EntityBase : MonoBehaviour
 
     private void Update()
     {
-        if (!wlm.loaded[(int)originCell.x, (int)originCell.y])
-        {
-            Destroy(this.gameObject);
-        }
+        if (wlm != null)
+            if (!wlm.loaded[(int)originCell.x, (int)originCell.y])
+            {
+                Destroy(this.gameObject);
+            }
     }
 
     public void Hit(hitType hitType)
     {
-        print(this.name + " hit by type: " + hitType.ToString());
-        if (hitBehaviour != null)
+        if (onScreen)
         {
-            hitBehaviour.Hit(hitType);
+            print(this.name + " hit by type: " + hitType.ToString());
+            if (hitBehaviour != null)
+            {
+                hitBehaviour.Hit(hitType);
+            }
         }
     }
 
     public void Interact()
     {
-        if (pickable)
+        if (onScreen)
         {
-            wlm.player.GetComponent<RPGController>().Pickup(this);
-        }
-        if (interactBehaviour != null)
-        {
-            interactBehaviour.Interact();
+            if (pickable)
+            {
+                wlm.player.GetComponent<RPGController>().Pickup(this);
+            }
+            if (interactBehaviour != null)
+            {
+                interactBehaviour.Interact();
+            }
         }
     }
 
     public void Activate()
     {
-        if (activateBehaviour != null)
+        if (onScreen)
         {
-            activateBehaviour.Activate();
+            if (activateBehaviour != null)
+            {
+                activateBehaviour.Activate();
+            }
         }
     }
 
     public void Deactivate()
     {
-        if (activateBehaviour != null)
+        if (onScreen)
         {
-            activateBehaviour.Deactivate();
+            if (activateBehaviour != null)
+            {
+                activateBehaviour.Deactivate();
+            }
         }
     }
 
     public void FixedUpdate()
     {
-        if (updateBehaviour != null)
+        if (onScreen)
         {
-            updateBehaviour.EUpdate();
+            if (updateBehaviour != null)
+            {
+                updateBehaviour.EUpdate();
+            }
         }
     }
 
     private void OnBecameInvisible()
     {
-        Destroy(this.gameObject);
+        onScreen = false;
+    }
+
+    private void OnBecameVisible()
+    {
+        onScreen = true;
     }
 }

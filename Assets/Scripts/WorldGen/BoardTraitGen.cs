@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class BoardTraitGen
 {
+    public Vector2 spawnPoint;
+
     public void traitMarkBiome(BoardData[,] map)
     {
         addRandomSpawn(map);
@@ -91,6 +93,7 @@ public class BoardTraitGen
                 {
                     map[x, y].OrType = BoardData.OrientationType.Clear;
                 }
+                /*
                 if (map[x, y].RType == BoardData.RoomType.Normal)
                 {
                     int Rand = Random.Range(0, 10);
@@ -106,7 +109,7 @@ public class BoardTraitGen
                     {
                         map[x, y].RType = BoardData.RoomType.Battle;
                     }
-                }
+                }*/
             }
         }
     }
@@ -115,9 +118,10 @@ public class BoardTraitGen
     {
         int Rand1 = Random.Range(0, map.GetLength(0));
         int Rand2 = Random.Range(0, map.GetLength(1));
-        if (map[Rand1, Rand2].RType == BoardData.RoomType.Normal)
+        if (map[Rand1, Rand2].RType == BoardData.RoomType.Normal && map[Rand1, Rand2].BiomeID == 1)
         {
             map[Rand1, Rand2].RType = BoardData.RoomType.Spawn;
+            spawnPoint = new Vector2((Rand1 * 32) + 16, (Rand2 * 32) + 16);
         }
         else
         {

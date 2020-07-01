@@ -14,5 +14,5 @@ public class EntityUniqueData
     public string bombSpawn;
     public float damage;
     public string switchCode;
-    public int switchMode;
+    public float switchMode;
 }

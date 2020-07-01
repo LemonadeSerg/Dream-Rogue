@@ -16,7 +16,7 @@ public class ItemBomb : ItemBase
         eud.bombSpawn = bombSpawn;
         eud.power = power;
         eud.fuse = fuse;
-        wlm.player.GetComponent<RPGController>().spawnToHand(wlm.spawnEntity(ScenePersistantData.getEntityFromName(bombName), eud, wlm.player.GetComponent<RPGController>().holdPos.transform.position));
+        wlm.player.GetComponent<RPGController>().spawnToHand(wlm.SpawnEntity(ScenePersistantData.getEntityFromName(bombName), eud, wlm.player.GetComponent<RPGController>().holdPos.transform.position));
     }
 
     public override void Up(WorldLoaderManager wlm)

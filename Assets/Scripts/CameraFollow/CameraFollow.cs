@@ -5,6 +5,9 @@ using UnityEngine;
 public class CameraFollow : MonoBehaviour
 {
     public WorldLoaderManager wlManger;
+    public float lerpFactor = 0.01f;
+    public float smoothTime = 0.3F;
+    private Vector3 velocity = Vector3.zero;
 
     // Start is called before the first frame update
     private void Start()
@@ -39,6 +42,6 @@ public class CameraFollow : MonoBehaviour
         {
             target1.y = BLLimit.y + (CamC.y - CamBL.y);
         }
-        Camera.main.transform.position = Vector3.Lerp(Camera.main.transform.position, target1, 0.05f);
+        Camera.main.transform.position = Vector3.SmoothDamp(Camera.main.transform.position, target1, ref velocity, smoothTime);
     }
 }
