@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Tilemaps;
 using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 public class TitleMenu : MonoBehaviour
 {
@@ -23,6 +24,11 @@ public class TitleMenu : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
+    }
+
+    private void OnGUI()
+    {
+        GUI.Label(new Rect(0, 0, 100, 100), "Rooms located at :" + LoadExternalRooms.WorldPath);
     }
 
     public void selectMenu(int menuID)

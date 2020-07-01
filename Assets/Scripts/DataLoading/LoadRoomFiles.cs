@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class LoadExternalRooms
 {
-    public string WorldPath = Application.dataPath + "/Rooms/";
+    public static string WorldPath = Application.dataPath + "/Rooms/";
 
     public void loadRooms()
     {
